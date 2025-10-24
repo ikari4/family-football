@@ -18,6 +18,9 @@ export default async function handler(req, res) {
     "&commenceTimeFrom" + commenceTimeFrom;
     "&commenceTimeTo=" + commenceTimeTo;
 
+console.log(commenceTimeFrom);
+console.log(commenceTimeTo);
+
   try {
     const response = await fetch(url);
 
