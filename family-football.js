@@ -3,13 +3,13 @@
 const nflWeeks = [
     {
         week: 8,
-        start: '2025-10-22',
-        end: '2025-10-28'
+        start: new Date('2025-10-22'),
+        end: new Date('2025-10-28')
     },
     {
         week: 9,
-        start: '2025-10-29',
-        end: '2025-11-04'
+        start: new Date('2025-10-29'),
+        end: new Date('2025-11-04')
     }
 ];
 
