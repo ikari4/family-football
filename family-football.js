@@ -27,16 +27,16 @@ if (nflWeek) {
 }
 
 // Call football.js to get odds from API for the current week
-// fetch(`/api/football?start=${nflWeek.start}&end=${nflWeek.end}`)
-//   .then(response => {
-//     if (!response.ok) {
-//       throw new Error(`Server error: ${response.status}`);
-//     }
-//     return response.json();
-//   })
-//   .then(data => {
-//     console.log('NFL odds data:', data);
-//   })
-//   .catch(error => {
-//     console.error('Error:', error);
-//   });
+fetch(`/api/football?start=${nflWeek.start}&end=${nflWeek.end}`)
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('NFL odds data:', data);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });

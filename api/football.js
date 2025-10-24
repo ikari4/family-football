@@ -1,16 +1,17 @@
-// api/signup.js
+// api/football.js
 
 export default async function handler(req, res) {
-  const urlBase = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?';
+  const urlBase = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=1609fd4bd3426401d97740caa596640d';
   const apiKey = '1609fd4bd3426401d97740caa596640d';
   const regions = 'us';
   const markets = 'spreads';
   const bookmakers = 'draftkings';
   const oddsFormat = 'american';
+  const { start, end } = req.query;
   const commenceTimeFrom = new Date(start);
   const commenceTimeTo = new Date(end);
   const url = urlBase +
-    "apiKey=" + apiKey + 
+    // "apiKey=" + apiKey + 
     "&regions=" + regions + 
     "&bookmakers=" + bookmakers + 
     "&markets=" + markets + 
@@ -18,23 +19,20 @@ export default async function handler(req, res) {
     "&commenceTimeFrom" + commenceTimeFrom +
     "&commenceTimeTo" + commenceTimeTo;
 
-  console.log(commenceTimeFrom);
-  console.log(commenceTimeTo);
+  try {
+    const response = await fetch(url);
 
-  // try {
-  //   const response = await fetch(url);
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "API request failed" });
+    }
 
-  //   if (!response.ok) {
-  //     return res.status(response.status).json({ error: "API request failed" });
-  //   }
+    const data = await response.json();
 
-  //   const data = await response.json();
+    // Return JSON to frontend
+    res.status(200).json(data);
 
-  //   // Return JSON to frontend
-  //   res.status(200).json(data);
-
-  // } catch (error) {
-  //   console.error(error);
-  //   res.status(500).json({ error: "Server Error" });
-  // }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
+  }
 }
