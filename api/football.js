@@ -18,20 +18,23 @@ export default async function handler(req, res) {
     "&commenceTimeFrom" + commenceTimeFrom +
     "&commenceTimeTo" + commenceTimeTo;
 
-  try {
-    const response = await fetch(url);
+  console.log(commenceTimeFrom);
+  console.log(commenceTimeTo);
 
-    if (!response.ok) {
-      return res.status(response.status).json({ error: "API request failed" });
-    }
+  // try {
+  //   const response = await fetch(url);
 
-    const data = await response.json();
+  //   if (!response.ok) {
+  //     return res.status(response.status).json({ error: "API request failed" });
+  //   }
 
-    // Return JSON to frontend
-    res.status(200).json(data);
+  //   const data = await response.json();
 
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Server Error" });
-  }
+  //   // Return JSON to frontend
+  //   res.status(200).json(data);
+
+  // } catch (error) {
+  //   console.error(error);
+  //   res.status(500).json({ error: "Server Error" });
+  // }
 }
