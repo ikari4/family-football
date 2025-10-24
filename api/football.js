@@ -7,8 +7,8 @@ export default async function handler(req, res) {
   const markets = 'spreads';
   const bookmakers = 'draftkings';
   const oddsFormat = 'american';
-  const commenceTimeFrom = new Date().toISOString().split('T')[0];
-  const commenceTimeTo = new Date(req.query.end).toISOString().split('T')[0];
+  const commenceTimeFrom = new Date().toISOString();
+  const commenceTimeTo = new Date(req.query.end).toISOString();
   const url = urlBase +
     "?apiKey=" + apiKey + 
     "&regions=" + regions + 
