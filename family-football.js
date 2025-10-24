@@ -20,12 +20,8 @@ const nflWeek = nflWeeks.find(event => {
     return date >= event.start && date <= event.end;
 });
 
-console.log(nflWeek.end.toISOString());
-test = new Date(nflWeek.end.toISOString());
-console.log(test);
-
 // Call football.js to get odds from API for the current week
-fetch(`/api/football?end=${nflWeek.end}`)
+fetch(`/api/football?end=${nflWeek.end.toISOString()}`)
   .then(response => {
     if (!response.ok) {
       throw new Error(`Server error: ${response.status}`);
