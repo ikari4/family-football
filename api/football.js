@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   const bookmakers = 'draftkings';
   const oddsFormat = 'american';
   const { start, end } = req.query;
-  const commenceTimeFrom = new Date(start);
+  // const commenceTimeFrom = new Date(start);
   const commenceTimeTo = new Date(end);
   const url = urlBase +
     // "apiKey=" + apiKey + 
@@ -16,8 +16,10 @@ export default async function handler(req, res) {
     "&bookmakers=" + bookmakers + 
     "&markets=" + markets + 
     "&oddsFormat=" + oddsFormat +
-    "&commenceTimeFrom" + commenceTimeFrom +
+    // "&commenceTimeFrom" + commenceTimeFrom +
     "&commenceTimeTo" + commenceTimeTo;
+
+    console.log(commenceTimeTo);
 
   try {
     const response = await fetch(url);
