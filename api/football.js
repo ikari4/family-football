@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   const markets = 'spreads';
   const bookmakers = 'draftkings';
   const oddsFormat = 'american';
-  const url = urlBase + "&regions=" + regions + "&bookmakers=" + markets + "&markets" + bookmakers + "&oddsFormat=" + oddsFormat;
+  const url = urlBase + "&regions=" + regions + "&bookmakers=" + bookmakers + "&markets" + markets + "&oddsFormat=" + oddsFormat;
 
   try {
     const response = await fetch(url);
