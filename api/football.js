@@ -1,39 +1,22 @@
-// Code from signup project. Must be changed!
-
 // api/signup.js
-import { createClient } from "@libsql/client";
-
-const turso = createClient({
-  url: process.env.TURSO_DATABASE_URL,
-  authToken: process.env.TURSO_AUTH_TOKEN,
-});
-
-// Simple validation helper
-const isValidString = (s) => typeof s === 'string' && s.trim().length > 0;
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Only POST allowed' });
-    return;
-  }
-
-  const { firstName, lastName, age } = req.body || {};
-
-  if (!isValidString(firstName) || !isValidString(lastName) || typeof age !== 'number' || age < 0) {
-    res.status(400).json({ error: 'Invalid input' });
-    return;
-  }
+  const url = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=1609fd4bd3426401d97740caa596640d&regions=us&markets=h2h,spreads&oddsFormat=american';
 
   try {
-    // Parameterized query to prevent injection
-    await turso.execute({
-      sql: `INSERT INTO users (first_name, last_name, age) VALUES (?, ?, ?)`,
-      args: [firstName.trim(), lastName.trim(), age],
-    });
+    const response = await fetch(url);
 
-    res.status(200).json({ ok: true });
-  } catch (err) {
-    console.error('DB error', err);
-    res.status(500).json({ error: 'Server error' });
+    if (!response.ok) {
+      return res.status(response.status).json({ error: "API request failed" });
+    }
+
+    const data = await response.json();
+
+    // Return JSON to frontend
+    res.status(200).json(data);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Server Error" });
   }
 }

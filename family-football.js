@@ -1,6 +1,15 @@
 // javascript
 
-fetch('https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=1609fd4bd3426401d97740caa596640d&regions=us&markets=h2h,spreads&oddsFormat=american')
-    .then(function(response) {
-        console.log(response.json());
-    });
+fetch('/api/football')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('NFL odds data:', data);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
