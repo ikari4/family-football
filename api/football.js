@@ -1,12 +1,18 @@
 // api/signup.js
 
 export default async function handler(req, res) {
-  const urlBase = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=1609fd4bd3426401d97740caa596640d';
+  const urlBase = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?';
+  const apiKey = '1609fd4bd3426401d97740caa596640d';
   const regions = 'us';
   const markets = 'spreads';
   const bookmakers = 'draftkings';
   const oddsFormat = 'american';
-  const url = urlBase + "&regions=" + regions + "&bookmakers=" + bookmakers + "&markets" + markets + "&oddsFormat=" + oddsFormat;
+  const url = urlBase +
+    "apiKey=" + apiKey + 
+    "&regions=" + regions + 
+    "&bookmakers=" + bookmakers + 
+    "&markets=" + markets + 
+    "&oddsFormat=" + oddsFormat;
 
   try {
     const response = await fetch(url);

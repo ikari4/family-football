@@ -1,15 +1,40 @@
 // javascript
 
-fetch('/api/football')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`Server error: ${response.status}`);
+const nflWeeks = [
+    {
+        week: 8,
+        start: '2025-10-22',
+        end: '2025-10-28'
+    },
+    {
+        week: 9,
+        start: '2025-10-29',
+        end: '2025-11-04'
     }
-    return response.json();
-  })
-  .then(data => {
-    console.log('NFL odds data:', data);
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+];
+
+const date = new Date();
+const nflWeek = nflWeeks.find(event => {
+    return date >= event.start && date <= event.end;
+});
+
+if (nflWeek) {
+    console.log('The current NFL Week is week ${nflWeek.week}');
+} else {
+    console.log('No event found within date.');
+}
+
+
+// fetch('/api/football')
+//   .then(response => {
+//     if (!response.ok) {
+//       throw new Error(`Server error: ${response.status}`);
+//     }
+//     return response.json();
+//   })
+//   .then(data => {
+//     console.log('NFL odds data:', data);
+//   })
+//   .catch(error => {
+//     console.error('Error:', error);
+//   });
