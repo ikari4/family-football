@@ -7,13 +7,15 @@ export default async function handler(req, res) {
   const markets = 'spreads';
   const bookmakers = 'draftkings';
   const oddsFormat = 'american';
-  const commenceTimeTo = encodeURIComponent(new Date(req.query.end).toISOString());
+  const commenceTimeFrom = new Date().toISOString().split('T')[0];
+  const commenceTimeTo = new Date(req.query.end).toISOString().split('T')[0];
   const url = urlBase +
     "?apiKey=" + apiKey + 
     "&regions=" + regions + 
     "&bookmakers=" + bookmakers + 
     "&markets=" + markets + 
     "&oddsFormat=" + oddsFormat +
+    "&commenceTimeFrom" + commenceTimeFrom;
     "&commenceTimeTo=" + commenceTimeTo;
 
   try {
