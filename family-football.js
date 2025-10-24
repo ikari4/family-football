@@ -19,7 +19,7 @@ const nflWeek = nflWeeks.find(event => {
 });
 
 if (nflWeek) {
-    console.log('The current NFL Week is week ${nflWeek.week}');
+    console.log(`The current NFL Week is week ${nflWeek.week}`);
 } else {
     console.log('No event found within date.');
 }
