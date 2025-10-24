@@ -21,7 +21,7 @@ const nflWeek = nflWeeks.find(event => {
 });
 
 // Call football.js to get odds from API for the current week
-fetch(`/api/football?end=${nflWeek.end.toISOString()}`)
+fetch('/api/football')
   .then(response => {
     if (!response.ok) {
       throw new Error(`Server error: ${response.status}`);
