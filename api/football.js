@@ -7,12 +7,16 @@ export default async function handler(req, res) {
   const markets = 'spreads';
   const bookmakers = 'draftkings';
   const oddsFormat = 'american';
+  const commenceTimeFrom = new Date(start);
+  const commenceTimeTo = new Date(end);
   const url = urlBase +
     "apiKey=" + apiKey + 
     "&regions=" + regions + 
     "&bookmakers=" + bookmakers + 
     "&markets=" + markets + 
-    "&oddsFormat=" + oddsFormat;
+    "&oddsFormat=" + oddsFormat +
+    "&commenceTimeFrom" + commenceTimeFrom +
+    "&commenceTimeTo" + commenceTimeTo;
 
   try {
     const response = await fetch(url);
