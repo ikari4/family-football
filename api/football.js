@@ -1,8 +1,8 @@
 // api/football.js
 
 export default async function handler(req, res) {
-  const urlBase = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/?apiKey=1609fd4bd3426401d97740caa596640d';
-  // const apiKey = '1609fd4bd3426401d97740caa596640d';
+  const urlBase = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/';
+  const apiKey = '1609fd4bd3426401d97740caa596640d';
   const regions = 'us';
   const markets = 'spreads';
   const bookmakers = 'draftkings';
@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   const { end } = req.query;
   // const commenceTimeTo = new Date(end).toISOString();
   const url = urlBase +
-    // "?apiKey=" + apiKey + 
+    "?apiKey=" + apiKey + 
     "&regions=" + regions + 
     "&bookmakers=" + bookmakers + 
     "&markets=" + markets + 
