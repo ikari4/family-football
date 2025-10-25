@@ -30,7 +30,13 @@ fetch('/api/football')
     return response.json();
   })
   .then(data => {
-    console.log('NFL odds data:', data);
+    const filteredMatchups = data.games.filter(game => {
+      const gameStart = new Date(game.commence_time);
+      return gameStart <= endDate;
+    });
+    console.log('Requests Remaining: ', data.usage);
+    console.log('Full Fetch:', data.games);
+    console.log('Filtered:', filteredMatchups);
   })
   .catch(error => {
     console.error('Error:', error);
@@ -897,11 +903,10 @@ fetch('/api/football')
 //   }
 // ];
 
-// Filter returned data for only this week's games
-const filteredMatchups = data.filter(game => {
-    const gameStart = new Date(game.commence_time);
-    return gameStart <= endDate;
-});
+// const filteredMatchups = data.filter(game => {
+//     const gameStart = new Date(game.commence_time);
+//     return gameStart <= endDate;
+// });
 
-console.log(data);
-console.log(filteredMatchups);
+// console.log(data);
+// console.log(filteredMatchups);

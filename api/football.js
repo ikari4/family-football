@@ -22,9 +22,13 @@ export default async function handler(req, res) {
     }
 
     const data = await response.json();
+    const requestsRemaining = response.headers.get("x-requests-remaining");
 
     // Return JSON to frontend
-    res.status(200).json(data);
+    res.status(200).json({
+        games: data,
+        usage: requestsRemaining
+    });
 
   } catch (error) {
     console.error(error);
