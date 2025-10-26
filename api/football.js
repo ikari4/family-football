@@ -94,7 +94,8 @@ export default async function handler (req, res) {
             game_date = excluded.game_date,
             nfl_week = excluded.nfl_week,
             home_team = excluded.home_team,
-            away_team = excluded.away_team;
+            away_team = excluded.away_team,
+            spread = excluded spread
           `,
           arg: [
             g.dk_game_id,
