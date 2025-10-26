@@ -1,4 +1,4 @@
-// api/football.js
+// api/odds-refresh.js
 
 import { createClient } from "@libsql/client";
 
@@ -109,13 +109,7 @@ export default async function handler (req, res) {
     }
 
     // Return JSON to frontend
-    res.status(200).json({
-      week: currentWeek.week,
-      saved: weekGames.length,
-      usage: requestsRemaining,
-      games: weekGames,
-      preview: weekGames.slice(0, 3)
-    });
+    res.status(200).send("Odds update completed");
 
   } catch (error) {
     console.error(error);
