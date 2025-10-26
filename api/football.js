@@ -97,7 +97,7 @@ export default async function handler (req, res) {
             away_team = excluded.away_team,
             spread = excluded.spread
           `,
-          arg: [
+          args: [
             g.dk_game_id,
             g.game_date,
             currentWeek.week,
