@@ -1,25 +1,4 @@
-// javascript
-
-// Set weeks of the current NFL season
-const nflWeeks = [
-    {
-        week: 8,
-        start: new Date('2025-10-22'),
-        end: new Date('2025-10-28')
-    },
-    {
-        week: 9,
-        start: new Date('2025-10-29'),
-        end: new Date('2025-11-04')
-    }
-];
-
-// Find which NFL week it is
-const date = new Date();
-const nflWeek = nflWeeks.find(event => {
-    return date >= event.start && date <= event.end;
-});
-endDate = nflWeek.end;
+// family-football.js
 
 // Call football.js to get odds from API for the current week
 fetch('/api/football')
@@ -30,13 +9,9 @@ fetch('/api/football')
     return response.json();
   })
   .then(data => {
-    const filteredMatchups = data.games.filter(game => {
-      const gameStart = new Date(game.commence_time);
-      return gameStart <= endDate;
-    });
     console.log('Requests Remaining: ', data.usage);
-    console.log('Full Fetch:', data.games);
-    console.log('Filtered:', filteredMatchups);
+    console.log('NFL Week: ', data.week );
+    console.log('Filtered:', data.games);
   })
   .catch(error => {
     console.error('Error:', error);
