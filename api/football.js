@@ -83,7 +83,7 @@ export default async function handler (req, res) {
     });
 
     // Send to Turso Database
-    for (const g of games) {
+    for (const g of weekGames) {
       await db.execute({
         sql: `
           INSERT INTO Games_2025_26
@@ -94,7 +94,7 @@ export default async function handler (req, res) {
             game_date = excluded.game_date,
             nfl_week = excluded.nfl_week,
             home_team = excluded.home_team,
-            away_team = excluded away_team;
+            away_team = excluded.away_team;
           `,
           arg: [
             g.dk_game_id,
