@@ -15,7 +15,7 @@ export default async function handler(req, res) {
       sql: `
         SELECT dk_game_id, home_team, away_team, spread, nfl_week
         FROM Games_2025_26
-        WHERE game_date <= ?
+        WHERE game_date >= ?
         ORDER BY game_date
       `,
       args: [today]
