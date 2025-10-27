@@ -20,7 +20,7 @@ document.getElementById("makeBtn").addEventListener("click", async () => {
       html += `
         <div class="game">
           <label>
-            <input type="radio" name="game-${i}" value="${g.away_team}" data-game-id="${gameID}">
+            <input type="radio" name="game-${i}" value="${g.away_team}" data-game-id="${gameId}">
             ${g.away_team} ${spread}
           </label>
           @
