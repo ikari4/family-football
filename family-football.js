@@ -40,5 +40,29 @@ document.getElementById("makeBtn").addEventListener("click", async () => {
   }
 });
 
+document.getElementById("submitBtn").addEventListener("click", async () => {
+  const radioButtons = document.querySelectorAll("input[type='radio']:checked");
+  
+  if (radioButtons.length === 0) {
+    alert("Please make at least one pick!");
+    return;
+  }
+
+  const picks = Array.from(radioButtons).map(rb => ({
+    dk_game_id: rb.dataset.gameId,
+    pick: rb.value
+  }));
+
+  const response = await fetch("/api/save-picks", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ picks })
+  });
+
+  const result = await response.json();
+  alert(result.message || "Saved!");
+});
+
+
 
 

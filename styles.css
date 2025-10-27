@@ -6,7 +6,7 @@ body {
     color: black;
 }
 
-.btn {
+button {
     display: flex;
     padding: 10px 20px;
     background-color: #1C4B8F;
@@ -19,7 +19,7 @@ body {
     width: 100%;
     max-width: 250px;
     height: 80px;
-    font-size:45px;
+    font-size:20px;
     align-items: center;
     justify-content: center;
 }
@@ -32,7 +32,7 @@ div {
 }
 
 h1 {
-    font-size: 60px;
+    font-size: 20px;
     color: #1C4B8F;
     text-align: center;
 }
