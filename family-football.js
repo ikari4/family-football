@@ -53,6 +53,8 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
     pick: rb.value
   }));
 
+  console.log("Picks being saved:", picks);
+
   const response = await fetch("/api/save-picks", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
