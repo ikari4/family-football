@@ -8,42 +8,78 @@ export default async function handler (req, res) {
     authToken: process.env.TURSO_AUTH_TOKEN,
   });
 
-  // WEEK 1 kickoff: Thursday Sept 4, 2025
-  const nflWeeks = [
-    { week: 1, start: "2025-09-04", end: "2025-09-10" },
-    { week: 2, start: "2025-09-11", end: "2025-09-17" },
-    { week: 3, start: "2025-09-18", end: "2025-09-24" },
-    { week: 4, start: "2025-09-25", end: "2025-10-01" },
-    { week: 5, start: "2025-10-02", end: "2025-10-08" },
-    { week: 6, start: "2025-10-09", end: "2025-10-15" },
-    { week: 7, start: "2025-10-16", end: "2025-10-22" },
-    { week: 8, start: "2025-10-23", end: "2025-10-29" },
-    { week: 9, start: "2025-10-30", end: "2025-11-05" },
-    { week: 10, start: "2025-11-06", end: "2025-11-12" },
-    { week: 11, start: "2025-11-13", end: "2025-11-19" },
-    { week: 12, start: "2025-11-20", end: "2025-11-26" },
-    { week: 13, start: "2025-11-27", end: "2025-12-03" },
-    { week: 14, start: "2025-12-04", end: "2025-12-10" },
-    { week: 15, start: "2025-12-11", end: "2025-12-17" },
-    { week: 16, start: "2025-12-18", end: "2025-12-24" },
-    { week: 17, start: "2025-12-25", end: "2025-12-31" },
-    { week: 18, start: "2026-01-01", end: "2026-01-07" }
-  ];
+  const nflWeeks = Array.from({ length: 18 }, (_, i) => {
+    const week = i + 1;
 
-  // Find current NFL Week
+    // Start: Week 1 begins Tuesday Sept 2, 2025 @ 12:00 PM Eastern (8 = September)
+    const start = getEasternDateUTC(2025, 8, 2 + i * 7, 12);
+
+    // End: Noon the following Tuesday minus 1 millisecond
+    const end = new Date(start);
+    end.setUTCDate(start.getUTCDate() + 7);
+    end.setUTCHours(start.getUTCHours(), 59, 59, 999);
+
+    return { week, start, end };
+  });
+
+  // Build UTC dates from US Eastern
+  function getEasternDateUTC(year, month, day, hourEastern) {
+  const easternString =
+    `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')} ` +
+    `${String(hourEastern).padStart(2,'0')}:00:00`;
+
+  return new Date(`${easternString} America/New_York`);
+  }
+
+  // Find the current week using UTC (server time)
   const today = new Date();
-  const currentWeek = nflWeeks.find(w =>
-    today >= new Date(w.start) && today <= new Date(w.end)
-  );
 
-  console.log("Today (server):", new Date().toISOString());
-  console.log("Server timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone);
-  console.log("Current week:", currentWeek?.week);
-
+  const currentWeek = nflWeeks.find(w => today >= w.start && today <= w.end);
 
   if (!currentWeek) {
+    console.error("Today:", today.toISOString());
     return res.status(400).json({ error: "Not within NFL season" });
   }
+
+  console.log("Current Week:", currentWeek.week);
+
+  
+  // // WEEK 1 kickoff: Thursday Sept 4, 2025
+  // const nflWeeks = [
+  //   { week: 1, start: "2025-09-04", end: "2025-09-10" },
+  //   { week: 2, start: "2025-09-11", end: "2025-09-17" },
+  //   { week: 3, start: "2025-09-18", end: "2025-09-24" },
+  //   { week: 4, start: "2025-09-25", end: "2025-10-01" },
+  //   { week: 5, start: "2025-10-02", end: "2025-10-08" },
+  //   { week: 6, start: "2025-10-09", end: "2025-10-15" },
+  //   { week: 7, start: "2025-10-16", end: "2025-10-22" },
+  //   { week: 8, start: "2025-10-23", end: "2025-10-29" },
+  //   { week: 9, start: "2025-10-30", end: "2025-11-05" },
+  //   { week: 10, start: "2025-11-06", end: "2025-11-12" },
+  //   { week: 11, start: "2025-11-13", end: "2025-11-19" },
+  //   { week: 12, start: "2025-11-20", end: "2025-11-26" },
+  //   { week: 13, start: "2025-11-27", end: "2025-12-03" },
+  //   { week: 14, start: "2025-12-04", end: "2025-12-10" },
+  //   { week: 15, start: "2025-12-11", end: "2025-12-17" },
+  //   { week: 16, start: "2025-12-18", end: "2025-12-24" },
+  //   { week: 17, start: "2025-12-25", end: "2025-12-31" },
+  //   { week: 18, start: "2026-01-01", end: "2026-01-07" }
+  // ];
+
+  // // Find current NFL Week
+  // const today = new Date();
+  // const currentWeek = nflWeeks.find(w =>
+  //   today >= new Date(w.start) && today <= new Date(w.end)
+  // );
+
+  // console.log("Today (server):", new Date().toISOString());
+  // console.log("Server timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone);
+  // console.log("Current week:", currentWeek?.week);
+
+
+  // if (!currentWeek) {
+  //   return res.status(400).json({ error: "Not within NFL season" });
+  // }
 
   // Get game data from the-odds-api
   const urlBase = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/';
