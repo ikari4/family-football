@@ -1,15 +1,29 @@
 // family-football.js
 
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
     const player = JSON.parse(localStorage.getItem("player"));
     if (!player) {
       document.getElementById("loginModal").style.display = "block";
-    } else {
-      document.getElementById("loginModal").style.display = "none";
-      document.getElementById("playerInfo").style.display = "block";
-      document.getElementById("welcomeText").textContent = `Welcome, ${player.player_name}!`;  
+      return;
     }
-});
+
+    document.getElementById("loginModal").style.display = "none";
+    document.getElementById("playerInfo").style.display = "block";
+    document.getElementById("welcomeText").textContent = `Welcome, ${player.player_name}!`;  
+
+    try {
+      const response = await fetch("/api/get-games");
+      const games = await response.json();
+
+    if (games.length === 0) {
+      document.getElementById("refreshOddsBtn").style.display = "inline-block";
+    }
+    
+    } catch (err) {
+      console.error("Error checking games:", err);
+    }
+  }
+);
 
 document.getElementById("loginBtn").addEventListener("click", async () => {
     const email = document.getElementById("emailInput").value;
@@ -44,6 +58,26 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 
   // Show login modal again
   document.getElementById("loginModal").style.display = "block";
+});
+
+document.getElementById("refreshOddsBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("refreshOddsBtn");
+  btn.disabled = true;
+  btn.textContent = "Refreshing...";
+
+  try {
+    const response = await fetch("/api/odds-refresh");
+    if (!response.ok) {
+      throw new Error("Refresh failed");
+    }
+    alert("Odds refreshed successfully!");
+    btn.style.display = "none";
+  } catch (err) {
+    alert("Error refreshing odds: " + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Refresh Odds";
+  }
 });
 
 
