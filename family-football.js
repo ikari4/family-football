@@ -3,7 +3,11 @@
 window.addEventListener("load", () => {
     const player = JSON.parse(localStorage.getItem("player"));
     if (!player) {
-        document.getElementById("loginModal").style.display = "block";
+      document.getElementById("loginModal").style.display = "block";
+    } else {
+      document.getElementById("loginModal").style.display = "none";
+      document.getElementById("playerInfo").style.display = "block";
+      document.getElementById("welcomeText").textContent = `Welcome, ${player.player_name}!`;  
     }
 });
 
@@ -29,6 +33,19 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     document.getElementById("loginModal").style.display = "none";
     location.reload();
 });
+
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  // Remove player from local storage
+  localStorage.removeItem("player");
+
+  // Hide player info
+  document.getElementById("playerInfo").style.display = "none";
+
+  // Show login modal again
+  document.getElementById("loginModal").style.display = "block";
+});
+
 
 document.getElementById("getPicksBtn").addEventListener("click", async () => {
   const gameContainer = document.getElementById("gameList");
