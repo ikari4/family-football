@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/odds-refresh",
-      "schedule": "0 18 * * 2"
+      "schedule": "0 16 * * *"
     }
   ]
 }
