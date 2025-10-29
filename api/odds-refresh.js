@@ -36,8 +36,12 @@ export default async function handler (req, res) {
     today >= new Date(w.start) && today <= new Date(w.end)
   );
 
+  console.log("Today (server):", new Date().toISOString());
+  console.log("Server timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone);
+  console.log("Current week:", currentWeek?.week);
+
+
   if (!currentWeek) {
-    console.log(today);
     return res.status(400).json({ error: "Not within NFL season" });
   }
 
