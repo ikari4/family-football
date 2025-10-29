@@ -32,7 +32,9 @@ export default async function handler (req, res) {
 
   // Find current NFL Week
   const today = new Date();
+  console.log(today);
   const currentWeek = nflWeeks.find(w =>
+    console.log(w.start, w.end),
     today >= new Date(w.start) && today <= new Date(w.end)
   );
 
