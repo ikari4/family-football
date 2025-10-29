@@ -89,6 +89,7 @@ window.addEventListener("load", async () => {
       }));
 
       console.log("Picks being saved:", picks);
+      console.log(picks);
 
       const response = await fetch("/api/save-picks", {
         method: "POST",
