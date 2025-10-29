@@ -34,6 +34,7 @@ window.addEventListener("load", async () => {
     
     const picksRes = await fetch(`/api/get-picks?player_id=${player.player_id}`);
     const picksData = await picksRes.json();
+    console.log(picksData);
     
     if (!picksRes.ok) {
       console.error("Error checking picks:", picksData.error);
@@ -99,6 +100,7 @@ window.addEventListener("load", async () => {
       alert(result.message || "Picks saved!");
       location.reload();
     });
+
   } catch (err) {
     console.error("Load error:", err);
     gameContainer.innerHTML = "<p>Error loading data.</p>";
