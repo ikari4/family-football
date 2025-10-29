@@ -10,21 +10,27 @@
 </head>
 <body>
     <h1>Ragusa Family Pool 2025-26</h1>
-    <div id="loginModal">
-        <label for="emailInput">email: </label>
-        <input id="emailInput" type="email" placeholder="email" required><br>
-        <label for="pwInput">password: </label>
-        <input id="pwInput" type="password" placeholder="password" required><br>
-        <button id="loginBtn">Login</button>
+    <div id="loginModal" style="display:none">
+        <div class="inputRow">
+            <label for="emailInput">email: </label>
+            <input id="emailInput" type="email" placeholder="email" required>
+        </div>
+        <div class="inputRow">
+            <label for="pwInput">password: </label>
+            <input id="pwInput" type="password" placeholder="password" required>
+        </div>
+        <div class="inputRow">
+            <button id="loginBtn">Login</button>
+        </div>
         <p id="loginError" style="color:red;"></p>
     </div>
     
     <div id="div1">
         <div id="gameList"></div>
-        <button id="makeBtn">Make Picks</button>
-        <button id="seeBtn">See Picks</button>
+        <button id="getPicksBtn">Get Games</button>
+        <!-- <button id="seeBtn">See Picks</button>
         <button id="standBtn">Standings</button>
-        <button id="submitBtn">Submit Picks</button>
+        <button id="submitBtn">Submit Picks</button> -->
     </div>
     <script src="family-football.js"></script>
 </body>

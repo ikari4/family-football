@@ -30,7 +30,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     location.reload();
 });
 
-document.getElementById("makeBtn").addEventListener("click", async () => {
+document.getElementById("getPicksBtn").addEventListener("click", async () => {
   const gameContainer = document.getElementById("gameList");
   gameContainer.innerHTML = "<p>Loading games...</p>";
 
