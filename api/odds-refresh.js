@@ -9,13 +9,12 @@ export default async function handler (req, res) {
   });
 
     // Build UTC dates from US Eastern
-  function getEasternDateUTC(year, month, day, hourEastern) {
-    const easternString =
-      `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')} ` +
-      `${String(hourEastern).padStart(2,'0')}:00:00`;
-
-    return new Date(`${easternString} America/New_York`);
-  }
+    function getEasternDateUTC(year, month, day, hourEastern) {
+      const date = new Date(Date.UTC(year, month, day, hourEastern));
+      const easternMillis = new Date(date.toLocaleString("en-US", { timeZone: "America/New_York" })).getTime();
+      const utcOffset = date.getTime() - easternMillis;
+      return new Date(date.getTime() - utcOffset);
+    }
   
   const nflWeeks = Array.from({ length: 18 }, (_, i) => {
     const week = i + 1;
@@ -24,9 +23,7 @@ export default async function handler (req, res) {
     const start = getEasternDateUTC(2025, 8, 2 + i * 7, 12);
 
     // End: Noon the following Tuesday minus 1 millisecond
-    const end = new Date(start);
-    end.setUTCDate(start.getUTCDate() + 7);
-    end.setUTCHours(start.getUTCHours(), 59, 59, 999);
+    const end = new Date(getEasternDateUTC(2025, 8, 2 + (i+1) * 7, 12) - 1);
 
     return { week, start, end };
   });
