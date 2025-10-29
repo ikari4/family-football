@@ -20,9 +20,9 @@ export default async function handler(req, res) {
     }
 
     // Hard-coded until we add player selection
-    const playerId = 1;
+    // const playerId = 1;
 
-    for (const pick of picks) {
+    for (const { pick, player_id } of picks) {
       await db.execute({
         sql: `
           INSERT INTO Picks_2025_26 (player_id, dk_game_id, pick)
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
             pick = excluded.pick,
             created_at = CURRENT_TIMESTAMP;
         `,
-        args: [playerId, pick.dk_game_id, pick.pick]
+        args: [player_id, pick.dk_game_id, pick.pick]
       });
     }
 
