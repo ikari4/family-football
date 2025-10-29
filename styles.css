@@ -35,8 +35,10 @@ button {
     font-size: 20px;
 }
 
-#logoutButton {
+#logoutBtn {
     background-color: gray;
+    color: black;
+    width: 100px;
 }
 
 .game {
