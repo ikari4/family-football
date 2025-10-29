@@ -17,7 +17,7 @@ window.addEventListener("load", async () => {
     document.getElementById("welcomeText").textContent = `Welcome, ${player.player_name}!`;  
 
     try {
-      const response = await fetch("/api/get-games");
+      const res = await fetch("/api/get-games");
       const games = await response.json();
 
       if (!res.ok) {
