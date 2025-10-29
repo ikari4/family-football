@@ -1,5 +1,35 @@
 // family-football.js
 
+window.addEventListener("load", () => {
+    const player = JSON.parse(localStorage.getItem("player"));
+    if (!player) {
+        document.getElementById("loginModal").style.display = "block";
+    }
+});
+
+document.getElementById("loginBtn").addEventListener("click", async () => {
+    const email = document.getElementById("emailInput").value;
+    const pw = document.getElementById("pwInput").value;
+
+    const res = await fetch("/api/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ email, pw })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+        document.getElementById("loginError").textContent = data.error;
+        return;
+    }
+
+    // Save player session locally
+    localStorage.setItem("player", JSON.stringify(data.player));
+
+    document.getElementById("loginModal").style.display = "none";
+    location.reload();
+});
+
 document.getElementById("makeBtn").addEventListener("click", async () => {
   const gameContainer = document.getElementById("gameList");
   gameContainer.innerHTML = "<p>Loading games...</p>";
