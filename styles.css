@@ -70,3 +70,21 @@ button {
     border-top: 1px solid #ccc;
     margin: 0.5rem 0;
 }
+
+.day-header {
+    margin-top: 1.5rem;
+    font-size: 20px;
+    background-color: #1C4B8F;
+    color: white;
+    font-weight: bold;
+    padding-bottom: 0.3rem;
+}
+
+#submitBtn {
+    display: block;
+    font-size: 20px;
+    background-color: #1C4B8F;
+    color: white;
+    font-weight: bold;
+    margin: 1.5rem auto;
+}

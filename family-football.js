@@ -52,37 +52,57 @@ window.addEventListener("load", async () => {
 
     const week = games[0]?.nfl_week || "Current";
     let html = `<h3>Week ${week}</h3>`;
-    gamesToPick.forEach((g, i) => {
-      const gameId = g.dk_game_id;
+    
+    // Group games by game_date (day only, ignoring time)
+    const gamesByDay = gamesToPick.reduce((groups, game) => {
+      const date = new Date(game.game_date);
+      // Create a readable day string (e.g., "Sunday, September 7")
+      const dayKey = date.toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric"
+      });
+      if (!groups[dayKey]) groups[dayKey] = [];
+      groups[dayKey].push(game);
+      return groups;
+    }, {});
+    
+    // Loop through each day group
+    for (const [day, dayGames] of Object.entries(gamesByDay)) {
+      html += `<h4 class="day-header">${day}</h4>`;
+
+      dayGames.forEach((g, i) => {
+        const gameId = g.dk_game_id;
+     
+        // Ensure we display a "+" before positive spreads
+        let spreadDisplay = "PK"; // default for pick'em games
+          if (g.spread !== null && g.spread !== undefined) {
+            const spreadNum = Number(g.spread);
+          if (!isNaN(spreadNum)) {
+            spreadDisplay = spreadNum > 0 ? `+${spreadNum}` : spreadNum.toString();
+          }
+        }  
       
-      // Ensure we display a "+" before positive spreads
-    let spreadDisplay = "PK"; // default for pick'em games
-      if (g.spread !== null && g.spread !== undefined) {
-        const spreadNum = Number(g.spread);
-      if (!isNaN(spreadNum)) {
-        spreadDisplay = spreadNum > 0 ? `+${spreadNum}` : spreadNum.toString();
-      }
-    }  
-      
-    html += `
-      <div class="game">  
-        <div class="team-row">
-          <label class="team-option">
-            <input type="radio" name="game-${i}" value="${g.away_team}" data-game-id="${gameId}">
-            ${g.away_team} ${spreadDisplay}
-          </label>
+      html += `
+        <div class="game">  
+          <div class="team-row">
+            <label class="team-option">
+              <input type="radio" name="game-${i}" value="${g.away_team}" data-game-id="${gameId}">
+              ${g.away_team} ${spreadDisplay}
+            </label>
+          </div>
+          <div class="at">@</div>
+          <div class="team-row">
+            <label class="team-option">
+              <input type="radio" name="game-${i}" value="${g.home_team}" data-game-id="${gameId}">
+              ${g.home_team}
+            </label>
+          </div>
         </div>
-        <div class="at">@</div>
-        <div class="team-row">
-          <label class="team-option">
-            <input type="radio" name="game-${i}" value="${g.home_team}" data-game-id="${gameId}">
-            ${g.home_team}
-          </label>
-        </div>
-      </div>
-        <hr>
-      `;
-    });
+          <hr>
+        `;
+      });
+    }
 
     html += `<button id="submitBtn">Submit Picks</button>`;
     gameContainer.innerHTML = html;
@@ -95,8 +115,7 @@ window.addEventListener("load", async () => {
         return;
       }
     
-    
-    const picks = Array.from(radioButtons).map(rb => ({
+      const picks = Array.from(radioButtons).map(rb => ({
         dk_game_id: rb.dataset.gameId,
         pick: rb.value,
         player_id: player.player_id,
