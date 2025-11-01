@@ -42,7 +42,31 @@ button {
 }
 
 .game {
-  padding: 10px;
-  font-size: 20px;
-  text-align: left;
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+}
+
+.team-row {
+    text-align: left;
+    margin: 0.2rem 0;
+}
+
+.team-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1rem;
+}
+
+.at {
+    text-align: center;
+    font-weight: bold;
+    color: #555;
+    margin: 0.4rem 0;
+}
+
+.game + hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 0.5rem 0;
 }
