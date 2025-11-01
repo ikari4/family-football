@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
     const result = await db.execute({
       sql: `
-        SELECT dk_game_id, home_team, away_team, spread, nfl_week
+        SELECT dk_game_id, home_team, away_team, spread, nfl_week, game_date
         FROM Games_2025_26
         WHERE game_date >= ?
         ORDER BY game_date
