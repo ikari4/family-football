@@ -3,7 +3,7 @@
 window.addEventListener("load", async () => {
     const player = JSON.parse(localStorage.getItem("player"));
     const loginModal = document.getElementById("loginModal");
-    const playerInfo = document.getElementById("playerInfo");
+    const bannerRow = document.getElementById("bannerRow");
     const refreshOddsBtn = document.getElementById("refreshOddsBtn");
     const gameContainer = document.getElementById("gameList");
 
@@ -13,10 +13,10 @@ window.addEventListener("load", async () => {
     }
 
     loginModal.style.display = "none";
-    playerInfo.style.display = "block";
-    // document.getElementById("welcomeText").textContent = `Welcome, ${player.player_name}!`;  
+    bannerRow.style.display = "block";
 
     try {
+      // Gets all games from current week from Games_2025_26
       const res = await fetch("/api/get-games");
       const games = await res.json();
 
@@ -25,13 +25,14 @@ window.addEventListener("load", async () => {
         gameContainer.innerHTML = `<p style="color:red;">Error loading games.</p>`;
         return;
     }
-    
+      // Displays Get Games button if there are no games for current week in Games_2025_26  
       if (games.length === 0) {
         gameContainer.innerHTML = "<p>No games found for this week.</p>";
         refreshOddsBtn.style.display = "inline-block";
         return;
     }
     
+    // Get an array of all picked games for current player
     const picksRes = await fetch(`/api/get-picks?player_id=${player.player_id}`);
     const picksData = await picksRes.json();
     
@@ -41,6 +42,7 @@ window.addEventListener("load", async () => {
       return;
     }
 
+    // Displays all un-picked current week games for player
     const pickedGameIds = new Set(picksData.map(p => p.dk_game_id));
     const gamesToPick = games.filter(g => !pickedGameIds.has(g.dk_game_id));
 
@@ -115,14 +117,12 @@ window.addEventListener("load", async () => {
         return;
       }
     
+      // Captures all user picks and sends to Picks_2025_26
       const picks = Array.from(radioButtons).map(rb => ({
         dk_game_id: rb.dataset.gameId,
         pick: rb.value,
         player_id: player.player_id,
       }));
-
-      console.log("Picks being saved:", picks);
-      console.log(picks);
 
       const response = await fetch("/api/save-picks", {
         method: "POST",
@@ -141,6 +141,7 @@ window.addEventListener("load", async () => {
   }
 });
 
+// Login logic
 document.getElementById("loginBtn").addEventListener("click", async () => {
     const email = document.getElementById("emailInput").value;
     const pw = document.getElementById("pwInput").value;
@@ -177,6 +178,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   document.getElementById("loginModal").style.display = "block";
 });
 
+// Get Games logic
 document.getElementById("refreshOddsBtn").addEventListener("click", async () => {
   const btn = document.getElementById("refreshOddsBtn");
   btn.disabled = true;

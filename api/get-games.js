@@ -1,4 +1,5 @@
 // /api/get-games.js
+// Returns all games of the current NFL week from the table Games_2025_26
 
 import { createClient } from "@libsql/client";
 

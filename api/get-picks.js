@@ -1,4 +1,6 @@
 // /api/get-picks.js
+// Returns all picked games for player
+
 import { createClient } from "@libsql/client";
 
 export default async function handler(req, res) {
