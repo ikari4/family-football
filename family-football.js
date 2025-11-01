@@ -14,7 +14,7 @@ window.addEventListener("load", async () => {
 
     loginModal.style.display = "none";
     playerInfo.style.display = "block";
-    document.getElementById("welcomeText").textContent = `Welcome, ${player.player_name}!`;  
+    // document.getElementById("welcomeText").textContent = `Welcome, ${player.player_name}!`;  
 
     try {
       const res = await fetch("/api/get-games");
@@ -50,7 +50,8 @@ window.addEventListener("load", async () => {
       return;
     }
 
-    let html = "<h3>Make Your Picks:</h3>";
+    const week = games[0]?.nfl_week || "Current";
+    let html = `<h3>Week ${week}</h3>`;
     gamesToPick.forEach((g, i) => {
       const gameId = g.dk_game_id;
       const spread = g.spread ? g.spread : "PK";
@@ -133,8 +134,9 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 
 
 document.getElementById("logoutBtn").addEventListener("click", () => {
-  // Remove player from local storage
+  // Remove player from local storage & clear screen
   localStorage.removeItem("player");
+  location.reload();
 
   // Hide player info
   document.getElementById("playerInfo").style.display = "none";
