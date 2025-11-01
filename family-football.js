@@ -34,7 +34,7 @@ window.addEventListener("load", async () => {
     
     const picksRes = await fetch(`/api/get-picks?player_id=${player.player_id}`);
     const picksData = await picksRes.json();
-    console.log(picksData);
+    // console.log(picksData);
     
     if (!picksRes.ok) {
       console.error("Error checking picks:", picksData.error);
@@ -60,12 +60,14 @@ console.log(gamesToPick);
     // Group games by game_date (day only, ignoring time)
     const gamesByDay = gamesToPick.reduce((groups, game) => {
       const date = new Date(game.game_date);
+      console.log(date);
       // Create a readable day string (e.g., "Sunday, September 7")
       const dayKey = date.toLocaleDateString("en-US", {
         weekday: "long",
         month: "long",
         day: "numeric"
       });
+      console.log(dayKey);
       if (!groups[dayKey]) groups[dayKey] = [];
       groups[dayKey].push(game);
       return groups;
@@ -73,7 +75,7 @@ console.log(gamesToPick);
    
 // LOG
 console.log(gamesByDay);
-console.log(dayKey);
+// console.log(dayKey);
 // LOG    
 
 
