@@ -54,14 +54,25 @@ window.addEventListener("load", async () => {
     let html = `<h3>Week ${week}</h3>`;
     gamesToPick.forEach((g, i) => {
       const gameId = g.dk_game_id;
-      const spread = g.spread ? g.spread : "PK";
-      html += `
-        <div class="game">
+      
+      // Ensure we display a "+" before positive spreads
+    let spreadDisplay = "PK"; // default for pick'em games
+      if (g.spread !== null && g.spread !== undefined) {
+        const spreadNum = Number(g.spread);
+      if (!isNaN(spreadNum)) {
+        spreadDisplay = spreadNum > 0 ? `+${spreadNum}` : spreadNum.toString();
+      }
+    }  
+      
+    html += `
+        <div class="game">  
           <label>
             <input type="radio" name="game-${i}" value="${g.away_team}" data-game-id="${gameId}">
-            ${g.away_team} ${spread}
+            ${g.away_team} ${spreadDisplay}
           </label>
-          @
+        </div>
+        <div style="text-align:center;">@</div>
+        <div>
           <label>
             <input type="radio" name="game-${i}" value="${g.home_team}" data-game-id="${gameId}">
             ${g.home_team}
