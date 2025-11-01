@@ -61,7 +61,7 @@ window.addEventListener("load", async () => {
         month: "long",
         day: "numeric"
       });
-      console.log(dayKey);
+      
       if (!groups[dayKey]) groups[dayKey] = [];
       groups[dayKey].push(game);
       return groups;
