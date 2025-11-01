@@ -45,6 +45,10 @@ window.addEventListener("load", async () => {
     const pickedGameIds = new Set(picksData.map(p => p.dk_game_id));
     const gamesToPick = games.filter(g => !pickedGameIds.has(g.dk_game_id));
 
+// LOG
+console.log(gamesToPick);
+// LOG
+
     if (gamesToPick.length === 0) {
       gameContainer.innerHTML = "<p>You’ve already made your picks for this week!</p>";
       return;
@@ -66,7 +70,13 @@ window.addEventListener("load", async () => {
       groups[dayKey].push(game);
       return groups;
     }, {});
-    
+   
+// LOG
+console.log(gamesByDay);
+console.log(dayKey);
+// LOG    
+
+
     // Loop through each day group
     for (const [day, dayGames] of Object.entries(gamesByDay)) {
       html += `<h4 class="day-header">${day}</h4>`;
