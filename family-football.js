@@ -60,7 +60,7 @@ console.log(gamesToPick);
     // Group games by game_date (day only, ignoring time)
     const gamesByDay = gamesToPick.reduce((groups, game) => {
       const date = new Date(game.game_date);
-      console.log(date);
+      console.log(game.game_date);
       // Create a readable day string (e.g., "Sunday, September 7")
       const dayKey = date.toLocaleDateString("en-US", {
         weekday: "long",
