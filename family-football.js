@@ -34,7 +34,6 @@ window.addEventListener("load", async () => {
     
     const picksRes = await fetch(`/api/get-picks?player_id=${player.player_id}`);
     const picksData = await picksRes.json();
-    // console.log(picksData);
     
     if (!picksRes.ok) {
       console.error("Error checking picks:", picksData.error);
@@ -44,10 +43,6 @@ window.addEventListener("load", async () => {
 
     const pickedGameIds = new Set(picksData.map(p => p.dk_game_id));
     const gamesToPick = games.filter(g => !pickedGameIds.has(g.dk_game_id));
-
-// LOG
-console.log(gamesToPick);
-// LOG
 
     if (gamesToPick.length === 0) {
       gameContainer.innerHTML = "<p>You’ve already made your picks for this week!</p>";
@@ -72,12 +67,6 @@ console.log(gamesToPick);
       groups[dayKey].push(game);
       return groups;
     }, {});
-   
-// LOG
-console.log(gamesByDay);
-// console.log(dayKey);
-// LOG    
-
 
     // Loop through each day group
     for (const [day, dayGames] of Object.entries(gamesByDay)) {

@@ -72,12 +72,14 @@ button {
 }
 
 .day-header {
-    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: 20px;
     background-color: #1C4B8F;
+    opacity: 0.5;
     color: white;
     font-weight: bold;
-    padding-bottom: 0.3rem;
 }
 
 #submitBtn {
@@ -87,4 +89,8 @@ button {
     color: white;
     font-weight: bold;
     margin: 1.5rem auto;
+}
+
+hr {
+    background-color: #1C4B8F;
 }
