@@ -74,7 +74,7 @@ window.addEventListener("load", async () => {
         </div>
         <div class="at">@</div>
         <div class="team-row">
-          <label>
+          <label class="team-option">
             <input type="radio" name="game-${i}" value="${g.home_team}" data-game-id="${gameId}">
             ${g.home_team}
           </label>
