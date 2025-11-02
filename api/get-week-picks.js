@@ -4,6 +4,7 @@ import { createClient } from "@libsql/client";
 
 export default async function handler(req, res) {
   try {
+    console.log(req.query);
     const { nfl_week } = req.query;
     if (!nfl_week) {
         console.log("Not nfl_week");
