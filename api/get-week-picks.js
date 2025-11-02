@@ -38,7 +38,7 @@ export default async function handler(req, res) {
         SELECT p.dk_game_id, pl.player_id, pl.player_name, p.pick
         FROM Picks_2025_26 p
         JOIN Games_2025_26 g ON p.dk_game_id = g.dk_game_id
-        JOIN Players pl ON p.player_email = pl.player_email
+        JOIN Players pl ON p.player_id = pl.player_id
         WHERE g.nfl_week = ?;
       `,
       args: [nfl_week],
