@@ -103,7 +103,6 @@ button {
   color: white;
   padding: 8px;
   text-align: left;
-  width: 50px;
 }
 
 .picks-table td {
@@ -112,18 +111,18 @@ button {
   border-bottom: 1px solid #ccc;
 }
 
-/* .picks-table th:nth-child(1),
+.picks-table th:nth-child(1),
     th:nth-child(5),
     th:nth-child(6),
     th:nth-child(7),
     th:nth-child(8),
     th:nth-child(9) {
-        width: 100px;
+        width: 50px;
     }
 
 .picks-table th:nth-child(2),th:nth-child(3), th:nth-child(4) {
-        width: 75px;
-    } */
+        width: 25px;
+    }
 
 .picks-table tr:nth-child(even) {
   background-color: rgba(28, 75, 143, 0.1);
