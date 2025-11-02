@@ -24,193 +24,177 @@ window.addEventListener("load", async () => {
         console.error("Error getting games:", games.error);
         gameContainer.innerHTML = `<p style="color:red;">Error loading games.</p>`;
         return;
-    }
-      // Displays Get Games button if there are no games for current week in Games_2025_26  
+      }
+
       if (games.length === 0) {
         gameContainer.innerHTML = "<p>No games found for this week.</p>";
         refreshOddsBtn.style.display = "inline-block";
         return;
-    }
+      }
     
-    // Get an array of all picked games for current player
-    const picksRes = await fetch(`/api/get-picks?player_id=${player.player_id}`);
-    const picksData = await picksRes.json();
+      // Get an array of all picked games for current player
+      const picksRes = await fetch(`/api/get-picks?player_id=${player.player_id}`);
+      const picksData = await picksRes.json();
     
-    if (!picksRes.ok) {
-      console.error("Error checking picks:", picksData.error);
-      gameContainer.innerHTML = `<p style="color:red;">Error checking your picks.</p>`;
-      return;
-    }
+      if (!picksRes.ok) {
+        console.error("Error checking picks:", picksData.error);
+        gameContainer.innerHTML = `<p style="color:red;">Error checking your picks.</p>`;
+        return;
+      }
 
-    // Displays all un-picked current week games for player
-    const pickedGameIds = new Set(picksData.map(p => p.dk_game_id));
-    const gamesToPick = games.filter(g => !pickedGameIds.has(g.dk_game_id));
+      // Displays all un-picked current week games for player
+      const pickedGameIds = new Set(picksData.map(p => p.dk_game_id));
+      const gamesToPick = games.filter(g => !pickedGameIds.has(g.dk_game_id));
 
-    if (gamesToPick.length === 0) {
-  
-      try {
+      if (gamesToPick.length === 0) {
+        // **CHANGED/ADDED: Render picks table when player has already picked**
+        try {
+          const week = games[0]?.nfl_week || "Current";
+          const picksTableRes = await fetch(`/api/get-week-picks?nfl_week=${week}`);
+          const picksTableData = await picksTableRes.json();
+
+          if (!picksTableRes.ok) {
+            console.error("Error loading picks table:", picksTableData.error);
+            gameContainer.innerHTML = `<p style="color:red;">Error loading weekly picks.</p>`;
+            return;
+          }
+
+          if (!picksTableData.length) {
+            gameContainer.innerHTML = `<p>No picks found for this week yet.</p>`;
+            return;
+          }
+
+          // **CHANGED/ADDED: Group games by day**
+          const gamesByDay = picksTableData.reduce((groups, game) => {
+            const date = new Date(game.game_date);
+            const dayKey = date.toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "long",
+              day: "numeric"
+            });
+            if (!groups[dayKey]) groups[dayKey] = [];
+            groups[dayKey].push(game);
+            return groups;
+          }, {});
+
+          // Get all player names dynamically
+          const allPlayerNames = new Set();
+          picksTableData.forEach(game => {
+            Object.keys(game.picks).forEach(name => allPlayerNames.add(name));
+          });
+          const playerNames = Array.from(allPlayerNames);
+
+          // Build HTML for table
+          let html = `<h3>Week ${week} Picks</h3>`;
+          for (const [day, dayGames] of Object.entries(gamesByDay)) {
+            html += `<h4 class="day-header">${day}</h4>`;
+            html += `<div style="overflow-x:auto;"><table class="picks-table">`;
+            html += "<thead><tr>";
+            html += "<th>Home Team</th><th>Home Score</th><th>Spread</th><th>Away Score</th><th>Away Team</th>";
+            playerNames.forEach(name => html += `<th>${name}</th>`);
+            html += "</tr></thead><tbody>";
+
+            dayGames.forEach(game => {
+              const spreadDisplay = game.spread > 0 ? `+${game.spread}` : game.spread ?? "PK";
+              html += "<tr>";
+              html += `<td>${game.home_team}</td>`;
+              html += `<td>${game.home_score ?? "-"}</td>`;
+              html += `<td>${spreadDisplay}</td>`;
+              html += `<td>${game.away_score ?? "-"}</td>`;
+              html += `<td>${game.away_team}</td>`;
+              playerNames.forEach(name => {
+                const pick = game.picks[name] || "";
+                const highlight = pick === game.winning_team ? "class='correct-pick'" : "";
+                html += `<td ${highlight}>${pick}</td>`;
+              });
+              html += "</tr>";
+            });
+
+            html += "</tbody></table></div>";
+          }
+
+          gameContainer.innerHTML = html;
+          return;
+
+        } catch (err) {
+          console.error("Error loading weekly picks:", err);
+          gameContainer.innerHTML = "<p>Error loading weekly picks.</p>";
+        }
+      }
+
+      // **CHANGED/ADDED: Display un-picked games grouped by day**
       const week = games[0]?.nfl_week || "Current";
+      let html = `<h3>Week ${week}</h3>`;
+      const gamesByDay = gamesToPick.reduce((groups, game) => {
+        const date = new Date(game.game_date);
+        const dayKey = date.toLocaleDateString("en-US", {
+          weekday: "long",
+          month: "long",
+          day: "numeric"
+        });
+        if (!groups[dayKey]) groups[dayKey] = [];
+        groups[dayKey].push(game);
+        return groups;
+      }, {});
 
-      const picksTableRes = await fetch(`/api/get-week-picks?nfl_week=${week}`);
-      const picksTableData = await picksTableRes.json();
+      for (const [day, dayGames] of Object.entries(gamesByDay)) {
+        html += `<h4 class="day-header">${day}</h4>`;
 
-      if (!picksTableRes.ok) {
-        console.error("Error loading picks table:", picksTableData.error);
-        gameContainer.innerHTML = `<p style="color:red;">Error loading weekly picks.</p>`;
-        return;
-      }
-
-      if (!picksTableData.length) {
-        gameContainer.innerHTML = `<p>No picks found for this week yet.</p>`;
-        return;
-      }
-
-      // Collect all player names from all games
-      const allPlayerNames = new Set();
-      picksTableData.forEach(game => {
-        Object.keys(game.picks).forEach(name => allPlayerNames.add(name));
-      });
-
-      const playerNames = Array.from(allPlayerNames);
-      
-      // LOG
-      console.log("player names: ", playerNames);
-      // LOG
-
-      // Build table header
-      let html = `
-        <h3>Week ${week} Picks</h3>
-        <table class="picks-table">
-          <thead>
-            <tr>
-              <th>Home Team</th>
-              <th>Home Score</th>
-              <th>Spread</th>
-              <th>Away Score</th>
-              <th>Away Team</th>
-              ${playerNames.map(name => `<th>${name}</th>`).join("")}
-            </tr>
-          </thead>
-          <tbody>
-      `;
-
-      // Build table rows
-      picksTableData.forEach(game => {
-        const spreadDisplay = game.spread > 0 ? `+${game.spread}` : game.spread;
-        html += `
-          <tr>
-            <td>${game.home_team}</td>
-            <td>${game.home_score ?? "-"}</td>
-            <td>${spreadDisplay ?? "PK"}</td>
-            <td>${game.away_score ?? "-"}</td>
-            <td>${game.away_team}</td>
-            ${playerNames.map(name => {
-              const pick = game.picks[name] || "";
-              const highlight =
-                pick === game.winning_team ? "class='correct-pick'" : "";
-              return `<td ${highlight}>${pick}</td>`;
-            }).join("")}
-          </tr>
-        `;
-      });
-
-      html += `
-          </tbody>
-        </table>
-      `;
-
-      gameContainer.innerHTML = html;
-      return;
-
-    } catch (err) {
-      console.error("Error loading weekly picks:", err);
-      gameContainer.innerHTML = "<p>Error loading weekly picks.</p>";
-    }
-  }
-
-    const week = games[0]?.nfl_week || "Current";
-    let html = `<h3>Week ${week}</h3>`;
-    
-    // Group games by game_date (day only, ignoring time)
-    const gamesByDay = gamesToPick.reduce((groups, game) => {
-      const date = new Date(game.game_date);
-      // Create a readable day string (e.g., "Sunday, September 7")
-      const dayKey = date.toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric"
-      });
-      
-      if (!groups[dayKey]) groups[dayKey] = [];
-      groups[dayKey].push(game);
-      return groups;
-    }, {});
-
-    // Loop through each day group
-    for (const [day, dayGames] of Object.entries(gamesByDay)) {
-      html += `<h4 class="day-header">${day}</h4>`;
-
-      dayGames.forEach((g, i) => {
-        const gameId = g.dk_game_id;
-     
-        // Ensure we display a "+" before positive spreads
-        let spreadDisplay = "PK"; // default for pick'em games
+        dayGames.forEach((g, i) => {
+          const gameId = g.dk_game_id;
+          let spreadDisplay = "PK";
           if (g.spread !== null && g.spread !== undefined) {
             const spreadNum = Number(g.spread);
-          if (!isNaN(spreadNum)) {
-            spreadDisplay = spreadNum > 0 ? `+${spreadNum}` : spreadNum.toString();
+            if (!isNaN(spreadNum)) {
+              spreadDisplay = spreadNum > 0 ? `+${spreadNum}` : spreadNum.toString();
+            }
           }
-        }  
-      
-      html += `
-        <div class="game">  
-          <div class="team-row">
-            <label class="team-option">
-              <input type="radio" name="game-${i}" value="${g.away_team}" data-game-id="${gameId}">
-              ${g.away_team} ${spreadDisplay}
-            </label>
-          </div>
-          <div class="at">@</div>
-          <div class="team-row">
-            <label class="team-option">
-              <input type="radio" name="game-${i}" value="${g.home_team}" data-game-id="${gameId}">
-              ${g.home_team}
-            </label>
-          </div>
-        </div>
-          <hr>
-        `;
-      });
-    }
 
-    html += `<button id="submitBtn">Submit Picks</button>`;
-    gameContainer.innerHTML = html;
-
-    // Attach submit handler dynamically
-    document.getElementById("submitBtn").addEventListener("click", async () => {
-      const radioButtons = document.querySelectorAll("input[type='radio']:checked");
-      if (radioButtons.length === 0) {
-        alert("Please make at least one pick!");
-        return;
+          html += `
+            <div class="game">  
+              <div class="team-row">
+                <label class="team-option">
+                  <input type="radio" name="game-${i}" value="${g.away_team}" data-game-id="${gameId}">
+                  ${g.away_team} ${spreadDisplay}
+                </label>
+              </div>
+              <div class="at">@</div>
+              <div class="team-row">
+                <label class="team-option">
+                  <input type="radio" name="game-${i}" value="${g.home_team}" data-game-id="${gameId}">
+                  ${g.home_team}
+                </label>
+              </div>
+            </div>
+            <hr>
+          `;
+        });
       }
-    
-      // Captures all user picks and sends to Picks_2025_26
-      const picks = Array.from(radioButtons).map(rb => ({
-        dk_game_id: rb.dataset.gameId,
-        pick: rb.value,
-        player_id: player.player_id,
-      }));
 
-      const response = await fetch("/api/save-picks", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ picks }),
+      html += `<button id="submitBtn">Submit Picks</button>`;
+      gameContainer.innerHTML = html;
+
+      // Attach submit handler dynamically
+      document.getElementById("submitBtn").addEventListener("click", async () => {
+        const radioButtons = document.querySelectorAll("input[type='radio']:checked");
+        if (radioButtons.length === 0) {
+          alert("Please make at least one pick!");
+          return;
+        }
+        const picks = Array.from(radioButtons).map(rb => ({
+          dk_game_id: rb.dataset.gameId,
+          pick: rb.value,
+          player_id: player.player_id,
+        }));
+        const response = await fetch("/api/save-picks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ picks }),
+        });
+        const result = await response.json();
+        alert(result.message || "Picks saved!");
+        location.reload();
       });
-
-      const result = await response.json();
-      alert(result.message || "Picks saved!");
-      location.reload();
-    });
 
   } catch (err) {
     console.error("Load error:", err);
@@ -220,42 +204,34 @@ window.addEventListener("load", async () => {
 
 // Login logic
 document.getElementById("loginBtn").addEventListener("click", async () => {
-    const email = document.getElementById("emailInput").value;
-    const pw = document.getElementById("pwInput").value;
+  const email = document.getElementById("emailInput").value;
+  const pw = document.getElementById("pwInput").value;
 
-    const res = await fetch("/api/login", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ email, pw })
-    });
+  const res = await fetch("/api/login", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ email, pw })
+  });
 
-    const data = await res.json();
-    if (!res.ok) {
-        document.getElementById("loginError").textContent = data.error;
-        return;
-    }
+  const data = await res.json();
+  if (!res.ok) {
+      document.getElementById("loginError").textContent = data.error;
+      return;
+  }
 
-    // Save player session locally
-    localStorage.setItem("player", JSON.stringify(data.player));
-
-    document.getElementById("loginModal").style.display = "none";
-    location.reload();
+  localStorage.setItem("player", JSON.stringify(data.player));
+  document.getElementById("loginModal").style.display = "none";
+  location.reload();
 });
 
-
 document.getElementById("logoutBtn").addEventListener("click", () => {
-  // Remove player from local storage & clear screen
   localStorage.removeItem("player");
   location.reload();
-
-  // Hide player info
   document.getElementById("playerInfo").style.display = "none";
-
-  // Show login modal again
   document.getElementById("loginModal").style.display = "block";
 });
 
-// Get Games logic
+// Refresh odds
 document.getElementById("refreshOddsBtn").addEventListener("click", async () => {
   const btn = document.getElementById("refreshOddsBtn");
   btn.disabled = true;
@@ -275,6 +251,7 @@ document.getElementById("refreshOddsBtn").addEventListener("click", async () => 
     btn.textContent = "Refresh Odds";
   }
 });
+
 
 
 
