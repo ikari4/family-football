@@ -6,11 +6,12 @@ export default async function handler(req, res) {
   try {
     const { nfl_week } = req.query;
     if (!nfl_week) {
+        console.log("Not nfl_week");
       return res.status(400).json({ error: "Missing nfl_week" });
     }
 
 // LOG
-console.log(nfl_week);
+console.log("I got here");
 // LOG
 
     // connect to Turso
