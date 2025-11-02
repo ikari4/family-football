@@ -92,7 +92,7 @@ button {
 
 /* Picks table styling */
 .picks-table {
-    table-layout: fixed;
+    /* table-layout: fixed; */
     width: 100%;
     border-collapse: collapse;
     /* font-size: 14px; */
