@@ -103,6 +103,7 @@ button {
     color: white;
     padding: 8px;
     text-align: left;
+    width: 100%;
 }
 
 /* .picks-table td {
