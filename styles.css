@@ -91,17 +91,18 @@ button {
 }
 
 .picks-table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+  table-layout: auto; /* let columns size naturally */
+  word-wrap: break-word;
 }
 
 .picks-table th {
-    background-color: #1C4B8F;
-    opacity: 0.7;
-    color: white;
-    padding: 8px;
-    text-align: left;
-    width: 100%;
+  background-color: rgba(28, 75, 143, 0.7);
+  color: white;
+  padding: 8px;
+  text-align: left;
 }
 
 .picks-table td {
@@ -111,7 +112,7 @@ button {
 }
 
 .picks-table tr:nth-child(even) {
-  background-color: rgba(28, 75, 143, 0.1); 
+  background-color: rgba(28, 75, 143, 0.1);
 }
 
 .correct-pick {
@@ -121,7 +122,7 @@ button {
 
 #gameList {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: auto; /* keep fallback for extremely narrow screens */
 }
 
 /* Table header spacing and centering */
