@@ -93,13 +93,11 @@ button {
 .picks-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 8px;
 }
 
 .picks-table th {
     background-color: #1C4B8F;
     opacity: 0.7;
-    font-size: 8px;
     color: white;
     padding: 8px;
     text-align: left;
@@ -114,14 +112,6 @@ button {
 
 .picks-table tr:nth-child(even) {
   background-color: rgba(28, 75, 143, 0.1); 
-}
-
-.picks-table th:nth-child(1) {
-    width: 50%;
-}
-
-.picks-table th:nth-child(2), th:nth-child(3), th:nth-child(4) {
-    width: 40%;
 }
 
 .correct-pick {
