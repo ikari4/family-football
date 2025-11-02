@@ -9,58 +9,71 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing nfl_week" });
     }
 
-    // connect to Turso
+    const weekNum = parseInt(nfl_week, 10);
+    if (isNaN(weekNum)) {
+      return res.status(400).json({ error: "Invalid nfl_week" });
+    }
+
+    // Connect to Turso
     const db = createClient({
       url: process.env.TURSO_DATABASE_URL,
       authToken: process.env.TURSO_AUTH_TOKEN,
     });
 
-    // Get all games for the week
-    const gamesRes = await db.execute({
+    // Fetch games and picks
+    const result = await db.execute({
       sql: `
-        SELECT dk_game_id, home_team, away_team, spread, home_score, away_score, winning_team
-        FROM Games_2025_26
-        WHERE nfl_week = ?
-        ORDER BY game_date ASC;
+        SELECT 
+          g.dk_game_id,
+          g.home_team,
+          g.away_team,
+          g.spread,
+          g.home_score,
+          g.away_score,
+          g.winning_team,
+          pl.player_name,
+          p.pick
+        FROM Games_2025_26 g
+        LEFT JOIN Picks_2025_26 p ON g.dk_game_id = p.dk_game_id
+        LEFT JOIN Players pl ON p.player_id = pl.player_id
+        WHERE g.nfl_week = ?
+        ORDER BY g.game_date ASC, pl.player_name ASC;
       `,
-      args: [nfl_week],
+      args: [weekNum],
     });
 
-    const games = gamesRes.rows;
+    const rows = result.rows;
 
-    if (games.length === 0) {
+    if (rows.length === 0) {
       return res.status(200).json([]);
     }
 
-    // Get all player picks for this week
-    const picksRes = await db.execute({
-      sql: `
-        SELECT p.dk_game_id, pl.player_name, p.pick
-        FROM Picks_2025_26 p
-        JOIN Players pl ON p.player_id = pl.player_id
-        JOIN Games_2025_26 g ON p.dk_game_id = g.dk_game_id
-        WHERE g.nfl_week = ?;
-        );
-      `,
-      args: [nfl_week],
+    // Combine picks for each game
+    const gamesMap = {};
+
+    rows.forEach(row => {
+      const gameId = row.dk_game_id;
+
+      if (!gamesMap[gameId]) {
+        gamesMap[gameId] = {
+          dk_game_id: gameId,
+          home_team: row.home_team,
+          away_team: row.away_team,
+          spread: row.spread,
+          home_score: row.home_score,
+          away_score: row.away_score,
+          winning_team: row.winning_team,
+          picks: {}, // will hold player_name: pick
+        };
+      }
+
+      if (row.player_name && row.pick) {
+        gamesMap[gameId].picks[row.player_name] = row.pick;
+      }
     });
 
-    const allPicks = picksRes.rows;
-
-    // Combine games and picks
-    const gamesWithPicks = games.map(g => {
-      const gamePicks = allPicks
-        .filter(p => p.dk_game_id === g.dk_game_id)
-        .reduce((acc, cur) => {
-          acc[cur.player_name] = cur.pick;
-          return acc;
-        }, {});
-
-      return {
-        ...g,
-        picks: gamePicks,
-      };
-    });
+    // Convert map to array
+    const gamesWithPicks = Object.values(gamesMap);
 
     res.status(200).json(gamesWithPicks);
 
