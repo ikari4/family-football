@@ -58,6 +58,7 @@ export default async function handler(req, res) {
       if (!gamesMap[gameId]) {
         gamesMap[gameId] = {
           dk_game_id: gameId,
+          game_date: row.game_date,
           home_team: row.home_team,
           away_team: row.away_team,
           spread: row.spread,
