@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     // Get all player picks for this week
     const picksRes = await db.execute({
       sql: `
-        SELECT p.dk_game_id, pl.player_name, p.pick
+        SELECT p.dk_game_id, pl.player_id, p.pick
         FROM Picks_2025_26 p
         JOIN Players pl ON p.player_email = pl.player_email
         WHERE p.nfl_week = ?;
@@ -50,7 +50,7 @@ export default async function handler(req, res) {
       const gamePicks = allPicks
         .filter(p => p.dk_game_id === g.dk_game_id)
         .reduce((acc, cur) => {
-          acc[cur.player_name] = cur.pick;
+          acc[cur.player_id] = cur.pick;
           return acc;
         }, {});
 
