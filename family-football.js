@@ -77,6 +77,8 @@ window.addEventListener("load", async () => {
             return groups;
           }, {});
 
+console.log(gamesByDay);
+
           // Get all player names dynamically
           const allPlayerNames = new Set();
           picksTableData.forEach(game => {

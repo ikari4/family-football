@@ -90,29 +90,6 @@ button {
     margin: 1.5rem auto;
 }
 
-.picks-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-.picks-table th,
-.picks-table td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: center;
-}
-
-.picks-table th {
-  background-color: #f0f0f0;
-  font-weight: bold;
-}
-
-.correct-pick {
-  background-color: #c8f7c5; /* light green for correct picks */
-  font-weight: bold;
-}
-
 /* Picks table styling */
 .picks-table {
   width: 100%;
