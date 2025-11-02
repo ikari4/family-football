@@ -91,17 +91,18 @@ button {
 }
 
 /* Picks table styling */
-/* .picks-table {
+.picks-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px; /* ensures table doesn't shrink too much */
-} */
+  /* min-width: 600px; */
+}
 
 .picks-table th {
-  background-color: rgba(28, 75, 143, 0.7); /* #1C4B8F at 70% opacity */
-  /* color: white;
-  padding: 8px;
-  text-align: left; */
+    background-color: #1C4B8F;
+    opacity: 0.7;
+    color: white;
+    padding: 8px;
+    text-align: left;
 }
 
 /* .picks-table td {
@@ -121,7 +122,7 @@ button {
 
 /* #gameList {
   width: 100%;
-  overflow-x: auto; /* horizontal scroll for mobile */
+  overflow-x: auto;
 } */
 
 /* Table header spacing and centering */

@@ -52,7 +52,6 @@ window.addEventListener("load", async () => {
           const week = games[0]?.nfl_week || "Current";
           const picksTableRes = await fetch(`/api/get-week-picks?nfl_week=${week}`);
           const picksTableData = await picksTableRes.json();
-          console.log(picksTableData);
 
           if (!picksTableRes.ok) {
             console.error("Error loading picks table:", picksTableData.error);
@@ -93,7 +92,7 @@ window.addEventListener("load", async () => {
           let html = `<h3>Week ${week} Picks</h3>`;
           for (const [day, dayGames] of Object.entries(gamesByDay)) {
             html += `<h4 class="day-header">${day}</h4>`;
-            html += `<div style="overflow-x:auto;"><table class="picks-table">`;
+            // html += `<div style="overflow-x:auto;"><table class="picks-table">`;
             html += "<thead><tr>";
             html += "<th>Home Team</th><th>Home Score</th><th>Spread</th><th>Away Score</th><th>Away Team</th>";
             playerNames.forEach(name => html += `<th>${name}</th>`);
