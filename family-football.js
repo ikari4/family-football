@@ -66,8 +66,8 @@ window.addEventListener("load", async () => {
 
           // **CHANGED/ADDED: Group games by day**
           const gamesByDay = picksTableData.reduce((groups, game) => {
-            console.log(game.game_date);
             const date = new Date(game.game_date);
+            console.log(date);
             const dayKey = date.toLocaleDateString("en-US", {
               weekday: "long",
               month: "long",
