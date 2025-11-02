@@ -67,6 +67,10 @@ window.addEventListener("load", async () => {
 
       // Get all player names dynamically from API
       const playerNames = Object.keys(picksTableData[0].picks);
+      
+      // LOG
+      console.log("player names: ", playerNames);
+      // LOG
 
       // Build table header
       let html = `
