@@ -92,9 +92,10 @@ button {
 
 /* Picks table styling */
 .picks-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    /* font-size: 14px; */
   /* min-width: 600px; */
 }
 
