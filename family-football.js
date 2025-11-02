@@ -52,6 +52,7 @@ window.addEventListener("load", async () => {
           const week = games[0]?.nfl_week || "Current";
           const picksTableRes = await fetch(`/api/get-week-picks?nfl_week=${week}`);
           const picksTableData = await picksTableRes.json();
+          console.log(picksTableData);
 
           if (!picksTableRes.ok) {
             console.error("Error loading picks table:", picksTableData.error);
