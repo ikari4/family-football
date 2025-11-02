@@ -4,16 +4,10 @@ import { createClient } from "@libsql/client";
 
 export default async function handler(req, res) {
   try {
-    console.log(req.query);
     const { nfl_week } = req.query;
     if (!nfl_week) {
-        console.log("Not nfl_week");
       return res.status(400).json({ error: "Missing nfl_week" });
     }
-
-// LOG
-console.log("I got here");
-// LOG
 
     // connect to Turso
     const db = createClient({
@@ -27,16 +21,12 @@ console.log("I got here");
         SELECT dk_game_id, home_team, away_team, spread, home_score, away_score, winning_team
         FROM Games_2025_26
         WHERE nfl_week = ?
-        ORDER BY commence_time ASC;
+        ORDER BY game_date ASC;
       `,
       args: [nfl_week],
     });
 
     const games = gamesRes.rows;
-
-    // LOG
-    console.log(games);
-    // LOG
 
     if (games.length === 0) {
       return res.status(200).json([]);
