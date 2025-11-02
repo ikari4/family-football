@@ -9,6 +9,10 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing nfl_week" });
     }
 
+// LOG
+console.log(nfl_week);
+// LOG
+
     // connect to Turso
     const db = createClient({
       url: process.env.TURSO_DATABASE_URL,
@@ -27,6 +31,10 @@ export default async function handler(req, res) {
     });
 
     const games = gamesRes.rows;
+
+    // LOG
+    console.log(games);
+    // LOG
 
     if (games.length === 0) {
       return res.status(200).json([]);
