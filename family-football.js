@@ -47,9 +47,77 @@ window.addEventListener("load", async () => {
     const gamesToPick = games.filter(g => !pickedGameIds.has(g.dk_game_id));
 
     if (gamesToPick.length === 0) {
-      gameContainer.innerHTML = "<p>You’ve already made your picks for this week!</p>";
+  
+      try {
+      const week = games[0]?.nfl_week || "Current";
+
+      const picksTableRes = await fetch(`/api/get-week-picks?nfl_week=${week}`);
+      const picksTableData = await picksTableRes.json();
+
+      if (!picksTableRes.ok) {
+        console.error("Error loading picks table:", picksTableData.error);
+        gameContainer.innerHTML = `<p style="color:red;">Error loading weekly picks.</p>`;
+        return;
+      }
+
+      if (!picksTableData.length) {
+        gameContainer.innerHTML = `<p>No picks found for this week yet.</p>`;
+        return;
+      }
+
+      // Get all player names dynamically from API
+      const playerNames = Object.keys(picksTableData[0].picks);
+
+      // Build table header
+      let html = `
+        <h3>Week ${week} Picks</h3>
+        <table class="picks-table">
+          <thead>
+            <tr>
+              <th>Home Team</th>
+              <th>Home Score</th>
+              <th>Spread</th>
+              <th>Away Score</th>
+              <th>Away Team</th>
+              ${playerNames.map(name => `<th>${name}</th>`).join("")}
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      // Build table rows
+      picksTableData.forEach(game => {
+        const spreadDisplay = game.spread > 0 ? `+${game.spread}` : game.spread;
+        html += `
+          <tr>
+            <td>${game.home_team}</td>
+            <td>${game.home_score ?? "-"}</td>
+            <td>${spreadDisplay ?? "PK"}</td>
+            <td>${game.away_score ?? "-"}</td>
+            <td>${game.away_team}</td>
+            ${playerNames.map(name => {
+              const pick = game.picks[name] || "";
+              const highlight =
+                pick === game.winning_team ? "class='correct-pick'" : "";
+              return `<td ${highlight}>${pick}</td>`;
+            }).join("")}
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+        </table>
+      `;
+
+      gameContainer.innerHTML = html;
       return;
+
+    } catch (err) {
+      console.error("Error loading weekly picks:", err);
+      gameContainer.innerHTML = "<p>Error loading weekly picks.</p>";
     }
+  }
 
     const week = games[0]?.nfl_week || "Current";
     let html = `<h3>Week ${week}</h3>`;
