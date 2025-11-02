@@ -65,8 +65,13 @@ window.addEventListener("load", async () => {
         return;
       }
 
-      // Get all player names dynamically from API
-      const playerNames = Object.keys(picksTableData[0].picks);
+      // Collect all player names from all games
+      const allPlayerNames = new Set();
+      picksTableData.forEach(game => {
+        Object.keys(game.picks).forEach(name => allPlayerNames.add(name));
+      });
+
+      const playerNames = Array.from(allPlayerNames);
       
       // LOG
       console.log("player names: ", playerNames);
