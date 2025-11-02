@@ -35,11 +35,14 @@ export default async function handler(req, res) {
     // Get all player picks for this week
     const picksRes = await db.execute({
       sql: `
-        SELECT p.dk_game_id, pl.player_id, pl.player_name, p.pick
+        SELECT p.dk_game_id, pl.player_name, p.pick
         FROM Picks_2025_26 p
-        JOIN Games_2025_26 g ON p.dk_game_id = g.dk_game_id
         JOIN Players pl ON p.player_id = pl.player_id
-        WHERE g.nfl_week = ?;
+        WHERE p.dk_game_id IN (
+          SELECT dk_game_id
+          FROM Games_2025_26
+          WHERE nfl_week = ?
+        );
       `,
       args: [nfl_week],
     });
