@@ -103,12 +103,14 @@ button {
   color: white;
   padding: 8px;
   text-align: left;
+  font-size: 10px;
 }
 
 .picks-table td {
   padding: 6px;
   text-align: left;
   border-bottom: 1px solid #ccc;
+  font-size: 10px;
 }
 
 .picks-table th:nth-child(1),
