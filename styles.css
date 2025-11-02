@@ -94,7 +94,7 @@ button {
   width: 100%;
   border-collapse: collapse;
   font-size: 16px;
-  table-layout: auto; /* let columns size naturally */
+  table-layout: fixed; 
   word-wrap: break-word;
 }
 
@@ -110,6 +110,19 @@ button {
   text-align: left;
   border-bottom: 1px solid #ccc;
 }
+
+.picks-table th:nth-child(1),
+    th:nth-child(5),
+    th:nth-child(6),
+    th:nth-child(7),
+    th:nth-child(8),
+    th:nth-child(9) {
+        width: 100px;
+    }
+
+.picks-table th:nth-child(2),th:nth-child(3), th:nth-child(4) {
+        width: 75px;
+    }
 
 .picks-table tr:nth-child(even) {
   background-color: rgba(28, 75, 143, 0.1);
