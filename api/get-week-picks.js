@@ -25,6 +25,7 @@ export default async function handler(req, res) {
       sql: `
         SELECT 
           g.dk_game_id,
+          g.game_date,
           g.home_team,
           g.away_team,
           g.spread,
