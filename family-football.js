@@ -66,8 +66,11 @@ window.addEventListener("load", async () => {
 
           // **CHANGED/ADDED: Group games by day**
           const gamesByDay = picksTableData.reduce((groups, game) => {
-            const date = new Date(game.game_date);
-            console.log(date);
+            const dateStr = game.game_date?.trim(); // remove any leading/trailing spaces
+            const date = new Date(dateStr);
+            if (isNaN(date)) {
+              console.warn("Invalid date for game:", game);
+            }
             const dayKey = date.toLocaleDateString("en-US", {
               weekday: "long",
               month: "long",
@@ -77,8 +80,6 @@ window.addEventListener("load", async () => {
             groups[dayKey].push(game);
             return groups;
           }, {});
-
-console.log(gamesByDay);
 
           // Get all player names dynamically
           const allPlayerNames = new Set();
