@@ -90,7 +90,39 @@ button {
     margin: 1.5rem auto;
 }
 
-.picks-table {
+    .picks-table {
+      table-layout: fixed;
+      width: 100%;
+      color: #1C4B8F;
+      border-collapse: collapse;
+    }
+
+    .picks-table th, td {
+      border: 1px solid #1C4B8F;
+      padding: 8px;
+      text-align: center;
+      width: 100%;
+      height: 30px;
+    }
+
+    .picks-table th {
+      background-color: #1C4B8F;
+      color: white;
+      opacity: 90%;
+    }
+
+    .picks-table td:nth-child(1), td:nth-child(2), td:nth-child(3), td:nth-child(4), td:nth-child(5) {
+      background-color: #1C4B8F;
+      color: white;
+      opacity: 70%;
+    }
+
+    .picks-table th:nth-child(2), th:nth-child(3), th:nth-child(4) {
+      width: 40%;
+    }
+
+
+/* .picks-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 8px;
@@ -106,14 +138,14 @@ button {
     width: 100%;
 }
 
-/* .picks-table td {
+.picks-table td {
   padding: 6px;
   text-align: left;
   border-bottom: 1px solid #ccc;
-} */
+}
 
 .picks-table tr:nth-child(even) {
-  background-color: rgba(28, 75, 143, 0.1); /* banded rows */
+  background-color: rgba(28, 75, 143, 0.1); 
 }
 
 .picks-table th:nth-child(1) {
@@ -129,7 +161,7 @@ button {
   font-weight: bold;
 }
 
-/* #gameList {
+#gameList {
   width: 100%;
   overflow-x: auto;
 } */
