@@ -115,6 +115,10 @@ button {
   background-color: rgba(28, 75, 143, 0.1); /* banded rows */
 }
 
+.picks-table th:nth-child(2), th:nth-child(3), th:nth-child(4) {
+    width: 40%;
+}
+
 .correct-pick {
   background-color: rgba(28, 75, 143, 0.3);
   font-weight: bold;
