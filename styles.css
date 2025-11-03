@@ -110,14 +110,14 @@ button {
   color: white;
   padding: 2px;
   text-align: center;
-  font-size: 7px;
+  font-size: 6px;
 }
 
 .picks-table td {
   padding: 6px;
   text-align: center;
   border: 1px solid #ccc;
-  font-size: 7px;
+  font-size: 6px;
 }
 
 .picks-table th:nth-child(1),
