@@ -126,11 +126,11 @@ button {
     th:nth-child(7),
     th:nth-child(8),
     th:nth-child(9) {
-        width: 52px;
+        width: 50px;
     }
 
 .picks-table th:nth-child(2),th:nth-child(3), th:nth-child(4) {
-        width: 15px;
+        width: 20px;
     }
 
 .picks-table tr:nth-child(even) {
