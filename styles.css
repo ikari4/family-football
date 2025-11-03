@@ -142,6 +142,12 @@ button {
   font-weight: bold;
 }
 
+@media screen and (orientation: landscape) {
+    .picks-table th, .picks-table td {
+        font-size: 12;
+    }
+}
+
 /* #gameList {
   width: 100%;
   overflow-x: auto; 
