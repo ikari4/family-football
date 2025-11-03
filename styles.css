@@ -102,14 +102,15 @@ button {
   background-color: rgba(28, 75, 143, 0.7);
   color: white;
   padding: 8px;
-  text-align: left;
+  text-align: center;
   font-size: 6px;
 }
 
 .picks-table td {
   padding: 6px;
-  text-align: left;
+  text-align: center;
   border-bottom: 1px solid #ccc;
+  border-right: 1px solid #ccc;
   font-size: 6px;
 }
 
@@ -143,7 +144,7 @@ button {
 /* Table header spacing and centering */
 #picksTable caption {
   caption-side: top;
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
   color: rgba(28, 75, 143, 0.8);
   margin-bottom: 10px;
