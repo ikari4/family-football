@@ -20,7 +20,7 @@ body {
     margin-bottom: 15px;
 }
 
-h1, h3 {
+h1 {
     font-size: 24px;
     color: #1C4B8F;
     text-align: center;
@@ -30,7 +30,7 @@ h3 {
     font-size: 18px;
     color:#1C4B8F;
     text-align: center;
-    margin: -5px;
+    margin: -3px;
 }
 
 button {
@@ -110,14 +110,14 @@ button {
   color: white;
   padding: 2px;
   text-align: center;
-  font-size: 6px;
+  font-size: 8px;
 }
 
 .picks-table td {
   padding: 6px;
   text-align: center;
   border: 1px solid #ccc;
-  font-size: 6px;
+  font-size: 8px;
 }
 
 .picks-table th:nth-child(1),
@@ -142,10 +142,10 @@ button {
   font-weight: bold;
 }
 
-#gameList {
+/* #gameList {
   width: 100%;
-  overflow-x: auto; /* keep fallback for extremely narrow screens */
-}
+  overflow-x: auto; 
+} */
 
 /* Table header spacing and centering */
 /* #picksTable caption {
