@@ -33,6 +33,12 @@ h3 {
     margin: -3px;
 }
 
+h4 {
+    color: #1C4B8F;
+    text-align: left;
+    border-bottom: 1px solid #1C4B8F;
+}
+
 button {
     width: 150px;
     height: 40px;
