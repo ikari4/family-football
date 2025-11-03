@@ -94,7 +94,7 @@ window.addEventListener("load", async () => {
             html += `<h4 class="day-header">${day}</h4>`;
             html += `<div><table class="picks-table">`;
             html += "<thead><tr>";
-            html += "<th>Home Team</th><th>Home Score</th><th>Spread</th><th>Away Score</th><th>Away Team</th>";
+            html += "<th>Home Team</th><th>Score</th><th>Line</th><th>Score</th><th>Away Team</th>";
             playerNames.forEach(name => html += `<th>${name}</th>`);
             html += "</tr></thead><tbody>";
 
