@@ -110,14 +110,14 @@ button {
   color: white;
   padding: 2px;
   text-align: center;
-  font-size: 6px;
+  font-size: 14px;
 }
 
 .picks-table td {
   padding: 6px;
   text-align: center;
   border: 1px solid #ccc;
-  font-size: 6px;
+  font-size: 14px;
 }
 
 .picks-table th:nth-child(1),
@@ -145,6 +145,12 @@ button {
 @media screen and (orientation: landscape) {
     .picks-table th, .picks-table td {
         font-size: 12px;
+    }
+}
+
+@media screen and (orientation: portrait) {
+    .picks-table th, .picks-table td {
+        font-size: 6px;
     }
 }
 
