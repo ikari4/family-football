@@ -144,7 +144,7 @@ button {
 
 @media screen and (orientation: landscape) {
     .picks-table th, .picks-table td {
-        font-size: 12;
+        font-size: 12px;
     }
 }
 
