@@ -163,16 +163,17 @@ button {
     }
 }
 
-/* #gameList {
-  width: 100%;
-  overflow-x: auto; 
-} */
+.spinner {
+  margin: 30px auto;
+  border: 4px solid rgba(28, 75, 143, 0.2);
+  border-top: 4px solid #1C4B8F;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
 
-/* Table header spacing and centering */
-/* #picksTable caption {
-  caption-side: top;
-  font-size: 16px;
-  font-weight: bold;
-  color: rgba(28, 75, 143, 0.8);
-  margin-bottom: 10px;
-} */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

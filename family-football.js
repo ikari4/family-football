@@ -6,6 +6,7 @@ window.addEventListener("load", async () => {
     const bannerRow = document.getElementById("bannerRow");
     const refreshOddsBtn = document.getElementById("refreshOddsBtn");
     const gameContainer = document.getElementById("gameList");
+    const loadingEl = document.getElementById("loadingMessage");
 
     if (!player) {
       loginModal.style.display = "block";
@@ -17,17 +18,18 @@ window.addEventListener("load", async () => {
 
     try {
       // Gets all games from current week from Games_2025_26
+      loadingEl.style.display = "block";
       const res = await fetch("/api/get-games");
       const games = await res.json();
 
       if (!res.ok) {
         console.error("Error getting games:", games.error);
-        gameContainer.innerHTML = `<p style="color:red;">Error loading games.</p>`;
+        gameContainer.innerHTML = `<p style="color:red;">Error loading games</p>`;
         return;
       }
 
       if (games.length === 0) {
-        gameContainer.innerHTML = "<p>No games found for this week.</p>";
+        gameContainer.innerHTML = "<p>No games found for this week</p>";
         refreshOddsBtn.style.display = "inline-block";
         return;
       }
@@ -38,7 +40,7 @@ window.addEventListener("load", async () => {
     
       if (!picksRes.ok) {
         console.error("Error checking picks:", picksData.error);
-        gameContainer.innerHTML = `<p style="color:red;">Error checking your picks.</p>`;
+        gameContainer.innerHTML = `<p style="color:red;">Error checking your picks</p>`;
         return;
       }
 
@@ -47,7 +49,7 @@ window.addEventListener("load", async () => {
       const gamesToPick = games.filter(g => !pickedGameIds.has(g.dk_game_id));
 
       if (gamesToPick.length === 0) {
-        // **CHANGED/ADDED: Render picks table when player has already picked**
+        // Render picks table when player has already picked**
         try {
           const week = games[0]?.nfl_week || "Current";
           const picksTableRes = await fetch(`/api/get-week-picks?nfl_week=${week}&player_id=${player.player_id}`);
@@ -55,23 +57,23 @@ window.addEventListener("load", async () => {
 
           if (!picksTableRes.ok) {
             console.error("Error loading picks table:", picksTableData.error);
-            gameContainer.innerHTML = `<p style="color:red;">Error loading weekly picks.</p>`;
+            gameContainer.innerHTML = `<p style="color:red;">Error loading weekly picks</p>`;
             return;
           }
 
           if (picksTableData.teammatesPending) {
-            gameContainer.innerHTML = `<p>Your teammate has not yet submitted picks.</p>`;
+            gameContainer.innerHTML = `<p>Waiting for your teammate...</p>`;
             return;
           }
 
           if (!picksTableData.length) {
-            gameContainer.innerHTML = `<p>No picks found for this week yet.</p>`;
+            gameContainer.innerHTML = `<p>No picks found for this week</p>`;
             return;
           }
 
-          // **CHANGED/ADDED: Group games by day**
+          // Group games by day
           const gamesByDay = picksTableData.reduce((groups, game) => {
-            const dateStr = game.game_date?.trim(); // remove any leading/trailing spaces
+            const dateStr = game.game_date?.trim();
             const date = new Date(dateStr);
             if (isNaN(date)) {
               console.warn("Invalid date for game:", game);
@@ -123,15 +125,16 @@ window.addEventListener("load", async () => {
           }
 
           gameContainer.innerHTML = html;
+          loadingEl.style.display = "none";
           return;
 
         } catch (err) {
           console.error("Error loading weekly picks:", err);
-          gameContainer.innerHTML = "<p>Error loading weekly picks.</p>";
+          gameContainer.innerHTML = "<p>Error loading weekly picks</p>";
         }
       }
 
-      // **CHANGED/ADDED: Display un-picked games grouped by day**
+      // Display un-picked games grouped by day
       const week = games[0]?.nfl_week || "Current";
       let html = `<h3>Week ${week}</h3>`;
       const gamesByDay = gamesToPick.reduce((groups, game) => {
