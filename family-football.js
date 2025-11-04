@@ -125,15 +125,13 @@ window.addEventListener("load", async () => {
           }
 
           gameContainer.innerHTML = html;
-          
+          loadingEl.style.display = "none";
           return;
 
         } catch (err) {
           console.error("Error loading weekly picks:", err);
           gameContainer.innerHTML = "<p>Error loading weekly picks</p>";
-        } finally {
-          loadingEl.style.display = "none";
-        }
+        } 
       }
 
       // Display un-picked games grouped by day
@@ -185,6 +183,8 @@ window.addEventListener("load", async () => {
             <hr>
           `;
         });
+        
+        loadingEl.style.display = "none";
       }
 
       html += `<button id="submitBtn">Submit Picks</button>`;
