@@ -43,9 +43,15 @@ button {
     font-size: 20px;
 }
 
-#logoutBtn {
-    width: 100px;
+#bannerRow {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
 }
+
+/* #logoutBtn {
+    width: 100px;
+} */
 
 .game {
     margin-bottom: 1rem;
