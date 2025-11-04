@@ -27,6 +27,11 @@ export default async function handler(req, res) {
       args: [player_id],
     });
     const team = teamRes.rows[0]?.team;
+    
+// 
+console.log(team);
+// 
+
     if (!team) {
       return res.status(400).json({ error: "Player has no assigned team" });
     }
@@ -38,12 +43,21 @@ export default async function handler(req, res) {
     });
     const teammateIds = teammatesRes.rows.map(r => r.player_id);
 
+// 
+console.log(teammateIds);
+// 
+
     // Count how many games are in this week
     const gamesRes = await db.execute({
       sql: `SELECT dk_game_id FROM Games_2025_26 WHERE nfl_week = ?;`,
       args: [nfl_week],
     });
     const gameCount = gamesRes.rows.length;
+
+//
+console.log(gameCount);
+//  
+
 
     // Count how many picks each teammate has made for this week
     const picksCountRes = await db.execute({
@@ -59,6 +73,10 @@ export default async function handler(req, res) {
 
     // Check if all teammates have full picks
     const allSubmitted = picksCountRes.rows.every(r => r.picks_made === gameCount);
+
+//
+console.log(allSubmitted); 
+
 
     if (!allSubmitted) {
       return res.status(200).json({ teammatesPending: true });
