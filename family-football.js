@@ -125,12 +125,14 @@ window.addEventListener("load", async () => {
           }
 
           gameContainer.innerHTML = html;
-          loadingEl.style.display = "none";
+          
           return;
 
         } catch (err) {
           console.error("Error loading weekly picks:", err);
           gameContainer.innerHTML = "<p>Error loading weekly picks</p>";
+        } finally {
+          loadingEl.style.display = "none";
         }
       }
 
