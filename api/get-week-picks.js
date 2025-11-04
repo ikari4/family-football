@@ -1,4 +1,5 @@
 // /api/get-week-picks.js
+// Displayes all picks in a table
 
 import { createClient } from "@libsql/client";
 
@@ -19,6 +20,49 @@ export default async function handler(req, res) {
       url: process.env.TURSO_DATABASE_URL,
       authToken: process.env.TURSO_AUTH_TOKEN,
     });
+
+    // Get this player's team
+    const teamRes = await db.execute({
+      sql: `SELECT team FROM Players WHERE player_id = ?;`,
+      args: [player_id],
+    });
+    const team = teamRes.rows[0]?.team;
+    if (!team) {
+      return res.status(400).json({ error: "Player has no assigned team" });
+    }
+
+    // Get all teammates on this team
+    const teammatesRes = await db.execute({
+      sql: `SELECT player_id FROM Players WHERE team = ?;`,
+      args: [team],
+    });
+    const teammateIds = teammatesRes.rows.map(r => r.player_id);
+
+    // Count how many games are in this week
+    const gamesRes = await db.execute({
+      sql: `SELECT dk_game_id FROM Games_2025_26 WHERE nfl_week = ?;`,
+      args: [nfl_week],
+    });
+    const gameCount = gamesRes.rows.length;
+
+    // Count how many picks each teammate has made for this week
+    const picksCountRes = await db.execute({
+      sql: `
+        SELECT player_id, COUNT(*) as picks_made
+        FROM Picks_2025_26
+        WHERE nfl_week = ?
+          AND player_id IN (${teammateIds.map(() => '?').join(',')})
+        GROUP BY player_id;
+      `,
+      args: [nfl_week, ...teammateIds],
+    });
+
+    // Check if all teammates have full picks
+    const allSubmitted = picksCountRes.rows.every(r => r.picks_made === gameCount);
+
+    if (!allSubmitted) {
+      return res.status(200).json({ teammatesPending: true });
+    }
 
     // Fetch games and picks
     const result = await db.execute({

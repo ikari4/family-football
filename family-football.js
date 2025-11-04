@@ -50,12 +50,17 @@ window.addEventListener("load", async () => {
         // **CHANGED/ADDED: Render picks table when player has already picked**
         try {
           const week = games[0]?.nfl_week || "Current";
-          const picksTableRes = await fetch(`/api/get-week-picks?nfl_week=${week}`);
+          const picksTableRes = await fetch(`/api/get-week-picks?nfl_week=${week}&player_id=${player.player_id}`);
           const picksTableData = await picksTableRes.json();
 
           if (!picksTableRes.ok) {
             console.error("Error loading picks table:", picksTableData.error);
             gameContainer.innerHTML = `<p style="color:red;">Error loading weekly picks.</p>`;
+            return;
+          }
+
+          if (picksTableData.teammatesPending) {
+            gameContainer.innerHTML = `<p>Your teammate has not yet submitted picks.</p>`;
             return;
           }
 
