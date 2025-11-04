@@ -159,18 +159,20 @@ window.addEventListener("load", async () => {
             }
           }
 
+          const nameAttr = `game-${gameId}`;
+
           html += `
             <div class="game">  
               <div class="team-row">
                 <label class="team-option">
-                  <input type="radio" name="game-${i}" value="${g.away_team}" data-game-id="${gameId}">
+                  <input type="radio" name="game-${nameAttr}" value="${g.away_team}" data-game-id="${gameId}">
                   ${g.away_team} ${spreadDisplay}
                 </label>
               </div>
               <div class="at">@</div>
               <div class="team-row">
                 <label class="team-option">
-                  <input type="radio" name="game-${i}" value="${g.home_team}" data-game-id="${gameId}">
+                  <input type="radio" name="game-${nameAttr}" value="${g.home_team}" data-game-id="${gameId}">
                   ${g.home_team}
                 </label>
               </div>
