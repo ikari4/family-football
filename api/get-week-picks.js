@@ -1,11 +1,11 @@
 // /api/get-week-picks.js
-// Displayes all picks in a table
+// Displays all picks in a table
 
 import { createClient } from "@libsql/client";
 
 export default async function handler(req, res) {
   try {
-    const { nfl_week } = req.query;
+    const { nfl_week, player_id } = req.query;
     if (!nfl_week) {
       return res.status(400).json({ error: "Missing nfl_week" });
     }
