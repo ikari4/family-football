@@ -57,26 +57,43 @@ console.log(teammateIds);
 //
 console.log(gameCount);
 //  
+    // If no games this week, treat as nothing to wait for
+    if (gameCount === 0) {
+        // no games -> nobody to wait for
+        // proceed to return the picks table later
+    }
 
+    // If there are no teammates (shouldn't happen) handle gracefully
+    if (!teammateIds || teammateIds.length === 0) {
+        // no teammates found -> treat as all submitted
+        // proceed to fetch and return the picks table below
+    } else {
+        // Build and run the query to count picks per teammate for games in this week
+        const placeholders = teammateIds.map(() => '?').join(',');
+        const picksCountRes = await db.execute({
+            sql: `
+            SELECT p.player_id, COUNT(*) AS picks_made
+            FROM Picks_2025_26 p
+            JOIN Games_2025_26 g ON p.dk_game_id = g.dk_game_id
+            WHERE g.nfl_week = ?
+                AND p.player_id IN (${placeholders})
+            GROUP BY p.player_id;
+            `,
+            args: [weekNum, ...teammateIds],
+        });
 
-    // Count how many picks each teammate has made for this week
-    const picksCountRes = await db.execute({
-      sql: `
-        SELECT player_id, COUNT(*) as picks_made
-        FROM Picks_2025_26
-        WHERE nfl_week = ?
-          AND player_id IN (${teammateIds.map(() => '?').join(',')})
-        GROUP BY player_id;
-      `,
-      args: [nfl_week, ...teammateIds],
-    });
+        // Create a map of player_id -> picks_made (players with zero picks won't be present)
+        const picksCountMap = {};
+        picksCountRes.rows.forEach(r => {
+            picksCountMap[r.player_id] = Number(r.picks_made);
+        });
 
-    // Check if all teammates have full picks
-    const allSubmitted = picksCountRes.rows.every(r => r.picks_made === gameCount);
+        // Check if all teammates have full picks
+        const allSubmitted = teammateIds.every(id => (picksCountMap[id] || 0) === gameCount);
 
 //
 console.log(allSubmitted); 
-
+// 
 
     if (!allSubmitted) {
       return res.status(200).json({ teammatesPending: true });
