@@ -27,10 +27,6 @@ export default async function handler(req, res) {
       args: [player_id],
     });
     const team = teamRes.rows[0]?.team;
-    
-// 
-console.log(team);
-// 
 
     if (!team) {
       return res.status(400).json({ error: "Player has no assigned team" });
@@ -43,63 +39,105 @@ console.log(team);
     });
     const teammateIds = teammatesRes.rows.map(r => r.player_id);
 
-// 
-console.log(teammateIds);
-// 
-
-    // Count how many games are in this week
-    const gamesRes = await db.execute({
-      sql: `SELECT dk_game_id FROM Games_2025_26 WHERE nfl_week = ?;`,
+    // Get all upcoming (not yet started) game IDs for the week
+    const upcomingGamesRes = await db.execute({
+      sql: `
+        SELECT dk_game_id
+        FROM Games_2025_26
+        WHERE nfl_week = ?
+          AND datetime(game_date) > datetime('now');
+      `,
       args: [nfl_week],
     });
-    const gameCount = gamesRes.rows.length;
+    const upcomingGameIds = upcomingGamesRes.rows.map(r => r.dk_game_id);
 
-//
-console.log(gameCount);
-//  
-    // If no games this week, treat as nothing to wait for
-    if (gameCount === 0) {
-        // no games -> nobody to wait for
-        // proceed to return the picks table later
-    }
+    // If there are upcoming games, check teammate completion
+    if (upcomingGameIds.length > 0 && teammateIds.length > 0) {
+        const placeholdersGames = upcomingGameIds.map(() => '?').join(',');
+        const placeholdersPlayers = teammateIds.map(() => '?').join(',');
 
-    // If there are no teammates (shouldn't happen) handle gracefully
-    if (!teammateIds || teammateIds.length === 0) {
-        // no teammates found -> treat as all submitted
-        // proceed to fetch and return the picks table below
-    } else {
-        // Build and run the query to count picks per teammate for games in this week
-        const placeholders = teammateIds.map(() => '?').join(',');
         const picksCountRes = await db.execute({
             sql: `
-            SELECT p.player_id, COUNT(*) AS picks_made
+            SELECT p.player_id, COUNT(DISTINCT p.dk_game_id) AS picks_made
             FROM Picks_2025_26 p
-            JOIN Games_2025_26 g ON p.dk_game_id = g.dk_game_id
-            WHERE g.nfl_week = ?
-                AND p.player_id IN (${placeholders})
+            WHERE p.player_id IN (${placeholdersPlayers})
+                AND p.dk_game_id IN (${placeholdersGames})
             GROUP BY p.player_id;
             `,
-            args: [weekNum, ...teammateIds],
+            args: [...teammateIds, ...upcomingGameIds],
         });
 
-        // Create a map of player_id -> picks_made (players with zero picks won't be present)
+        const allSubmitted = teammateIds.every(
+        id => (picksCountMap[id] || 0) === upcomingGameIds.length
+        );
+
+        if (!allSubmitted) {
+            return res.status(200).json({
+            teammatesPending: true,
+            message: "Your teammate has not yet submitted picks.",
+            });
+        }
+    }
+
+        // Build map: player_id → picks made
         const picksCountMap = {};
         picksCountRes.rows.forEach(r => {
             picksCountMap[r.player_id] = Number(r.picks_made);
         });
 
-        // Check if all teammates have full picks
-        const allSubmitted = teammateIds.every(id => (picksCountMap[id] || 0) === gameCount);
+    // Count how many games are in this week
+    // const gamesRes = await db.execute({
+    //   sql: `SELECT dk_game_id FROM Games_2025_26 WHERE nfl_week = ?;`,
+    //   args: [nfl_week],
+    // });
+    // const gameCount = gamesRes.rows.length;
 
 //
-console.log(allSubmitted); 
+// console.log(gameCount);
+//  
+    // If no games this week, treat as nothing to wait for
+    // if (gameCount === 0) {
+        // no games -> nobody to wait for
+        // proceed to return the picks table later
+    // }
+
+    // If there are no teammates (shouldn't happen) handle gracefully
+    // if (!teammateIds || teammateIds.length === 0) {
+        // no teammates found -> treat as all submitted
+        // proceed to fetch and return the picks table below
+    // } else {
+        // Build and run the query to count picks per teammate for games in this week
+        // const placeholders = teammateIds.map(() => '?').join(',');
+        // const picksCountRes = await db.execute({
+        //     sql: `
+        //     SELECT p.player_id, COUNT(*) AS picks_made
+        //     FROM Picks_2025_26 p
+        //     JOIN Games_2025_26 g ON p.dk_game_id = g.dk_game_id
+        //     WHERE g.nfl_week = ?
+        //         AND p.player_id IN (${placeholders})
+        //     GROUP BY p.player_id;
+        //     `,
+        //     args: [weekNum, ...teammateIds],
+        // });
+
+        // Create a map of player_id -> picks_made (players with zero picks won't be present)
+        // const picksCountMap = {};
+        // picksCountRes.rows.forEach(r => {
+        //     picksCountMap[r.player_id] = Number(r.picks_made);
+        // });
+
+        // Check if all teammates have full picks
+        // const allSubmitted = teammateIds.every(id => (picksCountMap[id] || 0) === gameCount);
+
+//
+// console.log(allSubmitted); 
 // 
 
-        if (!allSubmitted) {
-        return res.status(200).json({ teammatesPending: true });
-        }
-    }
-    
+    //     if (!allSubmitted) {
+    //     return res.status(200).json({ teammatesPending: true });
+    //     }
+    // }
+
     // Fetch games and picks
     const result = await db.execute({
       sql: `
