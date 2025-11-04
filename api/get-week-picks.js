@@ -67,6 +67,12 @@ export default async function handler(req, res) {
             args: [...teammateIds, ...upcomingGameIds],
         });
 
+        // Build map: player_id → picks made
+        const picksCountMap = {};
+        picksCountRes.rows.forEach(r => {
+            picksCountMap[r.player_id] = Number(r.picks_made);
+        });
+
         const allSubmitted = teammateIds.every(
         id => (picksCountMap[id] || 0) === upcomingGameIds.length
         );
@@ -78,12 +84,6 @@ export default async function handler(req, res) {
             });
         }
     }
-
-        // Build map: player_id → picks made
-        const picksCountMap = {};
-        picksCountRes.rows.forEach(r => {
-            picksCountMap[r.player_id] = Number(r.picks_made);
-        });
 
     // Count how many games are in this week
     // const gamesRes = await db.execute({
