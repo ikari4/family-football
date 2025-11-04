@@ -95,10 +95,11 @@ console.log(gameCount);
 console.log(allSubmitted); 
 // 
 
-    if (!allSubmitted) {
-      return res.status(200).json({ teammatesPending: true });
+        if (!allSubmitted) {
+        return res.status(200).json({ teammatesPending: true });
+        }
     }
-
+    
     // Fetch games and picks
     const result = await db.execute({
       sql: `
