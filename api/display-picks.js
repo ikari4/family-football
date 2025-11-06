@@ -1,5 +1,6 @@
-// /api/get-week-picks.js
-// Displays all picks in a table
+// /api/display-picks.js
+// Checks if all teammates have picked. If true, returns
+// an array used to poplulate picks table
 
 import { createClient } from "@libsql/client";
 
@@ -84,59 +85,6 @@ export default async function handler(req, res) {
             });
         }
     }
-
-    // Count how many games are in this week
-    // const gamesRes = await db.execute({
-    //   sql: `SELECT dk_game_id FROM Games_2025_26 WHERE nfl_week = ?;`,
-    //   args: [nfl_week],
-    // });
-    // const gameCount = gamesRes.rows.length;
-
-//
-// console.log(gameCount);
-//  
-    // If no games this week, treat as nothing to wait for
-    // if (gameCount === 0) {
-        // no games -> nobody to wait for
-        // proceed to return the picks table later
-    // }
-
-    // If there are no teammates (shouldn't happen) handle gracefully
-    // if (!teammateIds || teammateIds.length === 0) {
-        // no teammates found -> treat as all submitted
-        // proceed to fetch and return the picks table below
-    // } else {
-        // Build and run the query to count picks per teammate for games in this week
-        // const placeholders = teammateIds.map(() => '?').join(',');
-        // const picksCountRes = await db.execute({
-        //     sql: `
-        //     SELECT p.player_id, COUNT(*) AS picks_made
-        //     FROM Picks_2025_26 p
-        //     JOIN Games_2025_26 g ON p.dk_game_id = g.dk_game_id
-        //     WHERE g.nfl_week = ?
-        //         AND p.player_id IN (${placeholders})
-        //     GROUP BY p.player_id;
-        //     `,
-        //     args: [weekNum, ...teammateIds],
-        // });
-
-        // Create a map of player_id -> picks_made (players with zero picks won't be present)
-        // const picksCountMap = {};
-        // picksCountRes.rows.forEach(r => {
-        //     picksCountMap[r.player_id] = Number(r.picks_made);
-        // });
-
-        // Check if all teammates have full picks
-        // const allSubmitted = teammateIds.every(id => (picksCountMap[id] || 0) === gameCount);
-
-//
-// console.log(allSubmitted); 
-// 
-
-    //     if (!allSubmitted) {
-    //     return res.status(200).json({ teammatesPending: true });
-    //     }
-    // }
 
     // Fetch games and picks
     const result = await db.execute({

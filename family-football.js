@@ -1,4 +1,6 @@
 // family-football.js
+// Handles player login, the shows player this weeks games to pick.
+// If all games picked for all teammates, shows picks table.
 
 window.addEventListener("load", async () => {
     const player = JSON.parse(localStorage.getItem("player"));
@@ -9,6 +11,7 @@ window.addEventListener("load", async () => {
     const gameContainer = document.getElementById("gameList");
     const loadingEl = document.getElementById("loadingMessage");
 
+    // If player is not logged in, show login screen
     if (!player) {
       loginModal.style.display = "block";
       return;
@@ -17,8 +20,9 @@ window.addEventListener("load", async () => {
     loginModal.style.display = "none";
     bannerRow.style.display = "block";
 
+    // If player is logged in, continue to display on screen
     try {
-      // Gets all games from current week from Games_2025_26
+      // Call 'get-games' for a list of all games from current week from Games table in database
       loadingEl.style.display = "block";
       const res = await fetch("/api/get-games");
       const games = await res.json();
@@ -36,7 +40,7 @@ window.addEventListener("load", async () => {
         return;
       }
     
-      // Get an array of all picked games for current player
+      // Call 'get-picks' for a list of all games from week already picked by player
       const picksRes = await fetch(`/api/get-picks?player_id=${player.player_id}`);
       const picksData = await picksRes.json();
     
@@ -46,15 +50,15 @@ window.addEventListener("load", async () => {
         return;
       }
 
-      // Displays all un-picked current week games for player
+      // Display all un-picked current week games for player
       const pickedGameIds = new Set(picksData.map(p => p.dk_game_id));
       const gamesToPick = games.filter(g => !pickedGameIds.has(g.dk_game_id));
 
       if (gamesToPick.length === 0) {
-        // Render picks table when player has already picked
+        // Call 'display-picks' for data to display in picks table
         try {
           const week = games[0]?.nfl_week || "Current";
-          const picksTableRes = await fetch(`/api/get-week-picks?nfl_week=${week}&player_id=${player.player_id}`);
+          const picksTableRes = await fetch(`/api/display-picks?nfl_week=${week}&player_id=${player.player_id}`);
           const picksTableData = await picksTableRes.json();
 
           if (!picksTableRes.ok) {
@@ -191,14 +195,18 @@ window.addEventListener("load", async () => {
         loadingEl.style.display = "none";
       }
 
-      html += `<button id="submitBtn">Submit Picks</button>`;
+      html += `<button id="submitBtn">Submit</button>`;
       gameContainer.innerHTML = html;
 
-      // Attach submit handler dynamically
+      // Call 'save-picks' to write to database when Submit button clicked
       document.getElementById("submitBtn").addEventListener("click", async () => {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Wait..."
         const radioButtons = document.querySelectorAll("input[type='radio']:checked");
         if (radioButtons.length === 0) {
           alert("Please make at least one pick!");
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Submit";
           return;
         }
         const picks = Array.from(radioButtons).map(rb => ({
@@ -213,13 +221,15 @@ window.addEventListener("load", async () => {
         });
         const result = await response.json();
         alert(result.message || "Picks saved!");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit";
         location.reload();
       });
 
-  } catch (err) {
-    console.error("Load error:", err);
-    gameContainer.innerHTML = "<p>Error loading data.</p>";
-  }
+    } catch (err) {
+      console.error("Load error:", err);
+      gameContainer.innerHTML = "<p>Error loading data.</p>";
+    }
 });
 
 // Login logic
@@ -251,11 +261,11 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   document.getElementById("loginModal").style.display = "block";
 });
 
-// Refresh odds
+// Get games from API and save them in Games table in database
 document.getElementById("refreshOddsBtn").addEventListener("click", async () => {
   const btn = document.getElementById("refreshOddsBtn");
   btn.disabled = true;
-  btn.textContent = "Refreshing...";
+  btn.textContent = "Wait...";
 
   try {
     const response = await fetch("/api/odds-refresh");
@@ -269,7 +279,7 @@ document.getElementById("refreshOddsBtn").addEventListener("click", async () => 
     alert("Error refreshing odds: " + err.message);
   } finally {
     btn.disabled = false;
-    btn.textContent = "Refresh Odds";
+    btn.textContent = "Games";
   }
 });
 

@@ -27,15 +27,12 @@ function getEasternDateUTC(year, month, day, hourEastern) {
 // Build week ranges
 const nflWeeks = Array.from({ length: 18 }, (_, i) => {
   const week = i + 1;
-  console.log("week of:", week);
 
   // Week 1 begins Tuesday Sept 2 2025 @ 3 AM Eastern (month 8 = September)
   const start = getEasternDateUTC(2025, 8, 2 + i * 7, 3);
-  console.log("current week start:", start.toISOString());
 
   // End = 3 AM Eastern of the following Tuesday minus 1 ms
   const end = new Date(getEasternDateUTC(2025, 8, 2 + (i + 1) * 7, 3) - 1);
-  console.log("current week end:", end.toISOString());
 
   return { week, start, end };
 });
@@ -49,8 +46,6 @@ const nflWeeks = Array.from({ length: 18 }, (_, i) => {
     console.error("Today:", today.toISOString());
     return res.status(400).json({ error: "Not within NFL season" });
   }
-
-  console.log("Current Week:", currentWeek.week);
 
   // Get game data from the-odds-api
   const urlBase = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds/';
