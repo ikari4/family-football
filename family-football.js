@@ -49,7 +49,7 @@ window.addEventListener("load", async () => {
       const gamesToPick = games.filter(g => !pickedGameIds.has(g.dk_game_id));
 
       if (gamesToPick.length === 0) {
-        // Render picks table when player has already picked**
+        // Render picks table when player has already picked
         try {
           const week = games[0]?.nfl_week || "Current";
           const picksTableRes = await fetch(`/api/get-week-picks?nfl_week=${week}&player_id=${player.player_id}`);
