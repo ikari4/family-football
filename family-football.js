@@ -5,6 +5,7 @@ window.addEventListener("load", async () => {
     const loginModal = document.getElementById("loginModal");
     const bannerRow = document.getElementById("bannerRow");
     const refreshOddsBtn = document.getElementById("refreshOddsBtn");
+    const scoresBtn = document.getElementById("scoresBtn");
     const gameContainer = document.getElementById("gameList");
     const loadingEl = document.getElementById("loadingMessage");
 
@@ -30,6 +31,7 @@ window.addEventListener("load", async () => {
 
       if (games.length === 0) {
         gameContainer.innerHTML = "<p>No games found for this week</p>";
+        loadingEl.style.display = "none";
         refreshOddsBtn.style.display = "inline-block";
         return;
       }
@@ -63,6 +65,7 @@ window.addEventListener("load", async () => {
 
           if (picksTableData.teammatesPending) {
             gameContainer.innerHTML = `<p>Waiting for your teammate...</p>`;
+            loadingEl.style.display = "none";
             return;
           }
 
@@ -125,6 +128,7 @@ window.addEventListener("load", async () => {
           }
 
           gameContainer.innerHTML = html;
+          scoresBtn.style.display = "inline-block";
           loadingEl.style.display = "none";
           return;
 
@@ -260,6 +264,7 @@ document.getElementById("refreshOddsBtn").addEventListener("click", async () => 
     }
     alert("Odds refreshed successfully!");
     btn.style.display = "none";
+    location.reload();
   } catch (err) {
     alert("Error refreshing odds: " + err.message);
   } finally {

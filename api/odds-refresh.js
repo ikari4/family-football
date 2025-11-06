@@ -8,28 +8,37 @@ export default async function handler (req, res) {
     authToken: process.env.TURSO_AUTH_TOKEN,
   });
 
-    // Build UTC dates from US Eastern
-    function getEasternDateUTC(year, month, day, hourEastern) {
-      const date = new Date(Date.UTC(year, month, day, hourEastern));
-      const easternMillis = new Date(date.toLocaleString("en-US", { timeZone: "America/New_York" })).getTime();
-      const utcOffset = date.getTime() - easternMillis;
-      return new Date(date.getTime() - utcOffset);
-    }
-  
-  const nflWeeks = Array.from({ length: 18 }, (_, i) => {
-    const week = i + 1;
-    console.log("week of: ", week);
+// Build UTC dates from US Eastern (handles DST correctly)
+function getEasternDateUTC(year, month, day, hourEastern) {
+  // Create a UTC baseline
+  const local = new Date(Date.UTC(year, month, day, hourEastern));
 
-    // Start: Week 1 begins Tuesday Sept 2, 2025 @ 03:00 AM Eastern (8 = September)
-    const start = getEasternDateUTC(2025, 8, 2 + i * 7, 3);
-    console.log("current week start: ", start);
+  // Interpret that same date/time in America/New_York
+  const easternStr = local.toLocaleString("en-US", { timeZone: "America/New_York" });
+  const easternDate = new Date(easternStr);
 
-    // End: Noon the following Tuesday minus 1 millisecond
-    const end = new Date(getEasternDateUTC(2025, 8, 2 + (i+1) * 7, 3) - 1);
-    console.log("current week end: ", end);
+  // Compute true offset between UTC and Eastern for that date
+  const offsetMillis = easternDate.getTime() - local.getTime();
 
-    return { week, start, end };
-  });
+  // Adjust so the returned Date is the UTC equivalent of that Eastern time
+  return new Date(local.getTime() - offsetMillis);
+}
+
+// Build week ranges
+const nflWeeks = Array.from({ length: 18 }, (_, i) => {
+  const week = i + 1;
+  console.log("week of:", week);
+
+  // Week 1 begins Tuesday Sept 2 2025 @ 3 AM Eastern (month 8 = September)
+  const start = getEasternDateUTC(2025, 8, 2 + i * 7, 3);
+  console.log("current week start:", start.toISOString());
+
+  // End = 3 AM Eastern of the following Tuesday minus 1 ms
+  const end = new Date(getEasternDateUTC(2025, 8, 2 + (i + 1) * 7, 3) - 1);
+  console.log("current week end:", end.toISOString());
+
+  return { week, start, end };
+});
 
   // Find the current week using UTC (server time)
   const today = new Date();
