@@ -18,14 +18,15 @@ export default async function handler (req, res) {
   
   const nflWeeks = Array.from({ length: 18 }, (_, i) => {
     const week = i + 1;
+    console.log("week of: ", week);
 
     // Start: Week 1 begins Tuesday Sept 2, 2025 @ 03:00 AM Eastern (8 = September)
     const start = getEasternDateUTC(2025, 8, 2 + i * 7, 3);
-    console.log('current week start: ', start);
+    console.log("current week start: ", start);
 
     // End: Noon the following Tuesday minus 1 millisecond
     const end = new Date(getEasternDateUTC(2025, 8, 2 + (i+1) * 7, 3) - 1);
-    console.log('current week end: ', end);
+    console.log("current week end: ", end);
 
     return { week, start, end };
   });
