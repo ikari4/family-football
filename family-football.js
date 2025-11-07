@@ -105,7 +105,16 @@ window.addEventListener("load", async () => {
           const playerNames = Array.from(allPlayerNames);
 
           // Build HTML for table
-          let html = `<h3>Week ${week} Picks</h3>`;
+          let html = `<h3>Week ${week}</h3>`;
+          html += `<div><table class="scores-table">`;
+          html += "<thead><tr>";
+          playerNames.forEach(name => {
+            html += `<th>${name}</th>`;
+          });
+          html += "</tr><tbody><tr>";
+          html += "<td>P1</td><td>P2</td><td>P3</td><td>P4</td></tr>";
+          html += "</tbody></table></div>";
+
           for (const [day, dayGames] of Object.entries(gamesByDay)) {
             html += `<h4 class="day-header">${day}</h4>`;
             html += `<div><table class="picks-table">`;

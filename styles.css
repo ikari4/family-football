@@ -49,10 +49,6 @@ button {
     justify-content: space-evenly;
 }
 
-/* #logoutBtn {
-    width: 100px;
-} */
-
 .game {
     margin-bottom: 1rem;
     padding: 0.5rem 0;
@@ -167,20 +163,67 @@ button {
 @media screen and (orientation: portrait) {
     .picks-table th, .picks-table td {
         font-size: 6px;
+        height: 14px;
+    }
+}
+
+.scores-table {
+    table-layout: fixed;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+    margin-top: 5px;
+}
+
+.scores-table th {
+    background-color: rgba(28, 75, 143, 0.7);
+    width: 25%;
+    color: white;
+    padding: 2px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.scores-table td {
+    width: 25%;
+    background-color: white;
+    color:rgba(28, 75, 143, 0.7);
+    padding: 6px;
+    text-align: center;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+@media screen and (orientation: portrait) {
+    .scores-table {
+        width: 100%;
+    }
+}
+
+@media screen and (orientation: portrait) {
+    .scores-table th {
+        font-size: 12px;
+    }
+}
+
+@media screen and (orientation: landscape) {
+    .scores-table th {
+        font-size: 12px;
     }
 }
 
 .spinner {
-  margin: 30px auto;
-  border: 4px solid rgba(28, 75, 143, 0.2);
-  border-top: 4px solid #1C4B8F;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-}
+    margin: 30px auto;
+    border: 4px solid rgba(28, 75, 143, 0.2);
+    border-top: 4px solid #1C4B8F;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
