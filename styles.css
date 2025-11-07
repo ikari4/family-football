@@ -120,6 +120,7 @@ button {
 
 .picks-table td {
   padding: 6px;
+  height: 32px;
   text-align: center;
   border: 1px solid #ccc;
   font-size: 14px;

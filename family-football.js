@@ -110,18 +110,18 @@ window.addEventListener("load", async () => {
             html += `<h4 class="day-header">${day}</h4>`;
             html += `<div><table class="picks-table">`;
             html += "<thead><tr>";
-            html += "<th>Home Team</th><th>Score</th><th>Line</th><th>Score</th><th>Away Team</th>";
+            html += "<th>Away Team</th><th>Score</th><th>Line</th><th>Score</th><th>Home Team</th>";
             playerNames.forEach(name => html += `<th>${name}</th>`);
             html += "</tr></thead><tbody>";
 
             dayGames.forEach(game => {
               const spreadDisplay = game.spread > 0 ? `+${game.spread}` : game.spread ?? "PK";
               html += "<tr>";
-              html += `<td>${game.home_team}</td>`;
-              html += `<td>${game.home_score ?? "-"}</td>`;
-              html += `<td>${spreadDisplay}</td>`;
-              html += `<td>${game.away_score ?? "-"}</td>`;
               html += `<td>${game.away_team}</td>`;
+              html += `<td>${game.away_score ?? "-"}</td>`;
+              html += `<td>${spreadDisplay}</td>`;
+              html += `<td>${game.home_score ?? "-"}</td>`;
+              html += `<td>${game.home_team}</td>`;
               playerNames.forEach(name => {
                 const pick = game.picks[name] || "";
                 const highlight = pick === game.winning_team ? "class='correct-pick'" : "";
@@ -134,7 +134,15 @@ window.addEventListener("load", async () => {
           }
 
           gameContainer.innerHTML = html;
-          scoresBtn.style.display = "inline-block";
+          
+          const allWeek = await fetch("/api/get-games?mode=week");
+          const allWeekGames = await allWeek.json();
+          const firstGameStart = new Date(Math.min(...allWeekGames.map(g => new Date(g.game_date).getTime())));
+          const now = new Date();
+          if (now >= firstGameStart) {
+            scoresBtn.style.display = "inline-block";
+          }
+
           loadingEl.style.display = "none";
           return;
 
@@ -315,12 +323,13 @@ document.getElementById("refreshOddsBtn").addEventListener("click", async () => 
       body: JSON.stringify({ gameIds }),
     });
 
-    const result = await response.json();
+    const data = await response.json();
+    requestsRemaining = data.requestsRemaining;
 
     if (!response.ok) {
       throw new Error("Refresh failed");
     }
-    alert("Scores refreshed successfully!");
+    alert(`Scores refreshed successfully! Requests left: ${requestsRemaining}`);
     scoresBtn.disabled = false;
     scoresBtn.textContent = "Scores";
   } catch (err) {
@@ -328,6 +337,7 @@ document.getElementById("refreshOddsBtn").addEventListener("click", async () => 
   } finally {
     scoresBtn.disabled = false;
     scoresBtn.textContent = "Scores";
+    location.reload();
   }
 });
 

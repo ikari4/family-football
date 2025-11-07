@@ -32,14 +32,11 @@ export default async function handler (req, res) {
     // Extract data from the-odds-api data array
     const scoresData = await response.json();
     const requestsRemaining = response.headers.get("x-requests-remaining");
-    console.log("Requests remaining: ", requestsRemaining);
-    
+        
     // Filter scores only for your game IDs
     const relevantScores = scoresData.filter(g =>
       gameIds.includes(g.id)
     );
-
-    console.log("Releant Scores: ", relevantScores);
 
     // Update your Games table for each matching game
     const updates = [];
@@ -73,10 +70,10 @@ export default async function handler (req, res) {
         winning_team: winningTeam,
       });
     }
-
-    console.log(`Updated ${updates.length} games with latest scores`);
-
-    res.status(200).json({ updated: updates });
+    
+    res.status(200).json({ 
+      requestsRemaining: requestsRemaining ? Number(requestsRemaining) : null
+     });
   } catch (err) {
     console.error("Error refreshing scores:", err);
     res.status(500).json({ error: err.message || "Failed to refresh scores" });
