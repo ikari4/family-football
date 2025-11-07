@@ -1,6 +1,7 @@
 // family-football.js
 // Handles player login, the shows player this weeks games to pick.
 // If all games picked for all teammates, shows picks table.
+// Scores button updates completed games.
 
 window.addEventListener("load", async () => {
     const player = JSON.parse(localStorage.getItem("player"));
@@ -20,11 +21,11 @@ window.addEventListener("load", async () => {
     loginModal.style.display = "none";
     bannerRow.style.display = "block";
 
-    // If player is logged in, continue to display on screen
+    // If player is logged in, show either games to pick or picks table
     try {
       // Call 'get-games' for a list of all games from current week from Games table in database
       loadingEl.style.display = "block";
-      const res = await fetch("/api/get-games");
+      const res = await fetch("/api/get-games?mode=current");
       const games = await res.json();
 
       if (!res.ok) {
@@ -54,6 +55,7 @@ window.addEventListener("load", async () => {
       const pickedGameIds = new Set(picksData.map(p => p.dk_game_id));
       const gamesToPick = games.filter(g => !pickedGameIds.has(g.dk_game_id));
 
+      // If all games already picked, get data for picks table
       if (gamesToPick.length === 0) {
         // Call 'display-picks' for data to display in picks table
         try {
@@ -198,7 +200,8 @@ window.addEventListener("load", async () => {
       html += `<button id="submitBtn">Submit</button>`;
       gameContainer.innerHTML = html;
 
-      // Call 'save-picks' to write to database when Submit button clicked
+      // On 'Submit' button click
+      // Call 'save-picks' to write to database
       document.getElementById("submitBtn").addEventListener("click", async () => {
         submitBtn.disabled = true;
         submitBtn.textContent = "Wait..."
@@ -232,7 +235,7 @@ window.addEventListener("load", async () => {
     }
 });
 
-// Login logic
+// On 'Login' button click
 document.getElementById("loginBtn").addEventListener("click", async () => {
   const email = document.getElementById("emailInput").value;
   const pw = document.getElementById("pwInput").value;
@@ -254,6 +257,7 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
   location.reload();
 });
 
+// On 'Logout' button click
 document.getElementById("logoutBtn").addEventListener("click", () => {
   localStorage.removeItem("player");
   location.reload();
@@ -261,11 +265,12 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   document.getElementById("loginModal").style.display = "block";
 });
 
-// Get games from API and save them in Games table in database
+// On 'Games' button click
+// Get games from API and save them in database
 document.getElementById("refreshOddsBtn").addEventListener("click", async () => {
-  const btn = document.getElementById("refreshOddsBtn");
-  btn.disabled = true;
-  btn.textContent = "Wait...";
+  const gamesBtn = document.getElementById("refreshOddsBtn");
+  gamesBtn.disabled = true;
+  gamesBtn.textContent = "Wait...";
 
   try {
     const response = await fetch("/api/odds-refresh");
@@ -273,17 +278,58 @@ document.getElementById("refreshOddsBtn").addEventListener("click", async () => 
       throw new Error("Refresh failed");
     }
     alert("Odds refreshed successfully!");
-    btn.style.display = "none";
+    gamesBtn.style.display = "none";
     location.reload();
   } catch (err) {
     alert("Error refreshing odds: " + err.message);
   } finally {
-    btn.disabled = false;
-    btn.textContent = "Games";
+    gamesBtn.disabled = false;
+    gamesBtn.textContent = "Games";
   }
 });
 
+// On 'Scores' button click
+// Get scores from the API and save them in the database
+  document.getElementById("scoresBtn").addEventListener("click", async () => {
+  const scoresBtn = document.getElementById("scoresBtn");
+  scoresBtn.disabled = true;
+  scoresBtn.textContent = "Wait...";
 
+  try {
+    const gamesRes = await fetch("/api/get-games?mode=week");
+    const games = await gamesRes.json();
+
+    if (!gamesRes.ok) {
+      throw new Error ("Error fetching games: " + (games.error || "Unknown error"));
+    }
+
+    const gameIds = games.map(g => g.dk_game_id);
+    if (gameIds.length === 0) {
+      alert("No games found for this week.");
+      return;
+    }
+
+    const response = await fetch("/api/scores-refresh", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ gameIds }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error("Refresh failed");
+    }
+    alert("Scores refreshed successfully!");
+    scoresBtn.disabled = false;
+    scoresBtn.textContent = "Scores";
+  } catch (err) {
+    alert("Error refreshing scores: " + err.message);
+  } finally {
+    scoresBtn.disabled = false;
+    scoresBtn.textContent = "Scores";
+  }
+});
 
 
 
