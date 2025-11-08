@@ -258,8 +258,9 @@ window.addEventListener("load", async () => {
             const playerNames = Array.from(allPlayers);
 
             // Build HTML standings table
-            let htmlStand = `<h3>Season Standings</h3>`;
-            htmlStand += `<div><table class="scores-table">`;
+            let htmlStand = `<hr></hr>`;
+            htmlStand += `<h3>Season Standings</h3>`;
+            htmlStand += `<div><table class="standings-table">`;
             
             htmlStand += `<th>Week</th>`;
             playerNames.forEach(name => {
@@ -282,13 +283,14 @@ window.addEventListener("load", async () => {
             });
 
             // Add totals row
-            htmlStand += `<tr><th>Total</th>`;
+            htmlStand += `<tr><td>Total</td>`;
             playerNames.forEach(name => {
-              htmlStand += `<th>${totalWins[name]}</th>`;
+              htmlStand += `<td>${totalWins[name]}</td>`;
             });
             htmlStand += `</tr>`;
 
             htmlStand += "</tbody></table></div>";
+            htmlStand += `<hr></hr>`;
 
             // Display on page
             const tableContainer = document.getElementById("standingsArea");
