@@ -67,12 +67,13 @@ export default async function handler (req, res) {
         dk_game_id: g.id,
         home_score: homeScore,
         away_score: awayScore,
-        winning_team: winningTeam,
+        winning_team: winningTeam
       });
     }
     
     res.status(200).json({ 
-      requestsRemaining: requestsRemaining ? Number(requestsRemaining) : null
+      updates,
+      requests_remaining: requestsRemaining
      });
   } catch (err) {
     console.error("Error refreshing scores:", err);

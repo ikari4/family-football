@@ -1,16 +1,18 @@
 // family-football.js
 // Handles player login, the shows player this weeks games to pick.
 // If all games picked for all teammates, shows picks table.
-// Scores button updates completed games.
 
 window.addEventListener("load", async () => {
     const player = JSON.parse(localStorage.getItem("player"));
     const loginModal = document.getElementById("loginModal");
     const bannerRow = document.getElementById("bannerRow");
     const refreshOddsBtn = document.getElementById("refreshOddsBtn");
-    const scoresBtn = document.getElementById("scoresBtn");
     const gameContainer = document.getElementById("gameList");
     const loadingEl = document.getElementById("loadingMessage");
+
+    window.picksTableData = [];
+    window.playerNames = [];
+    window.playerWins = {};
 
     // If player is not logged in, show login screen
     if (!player) {
@@ -63,6 +65,8 @@ window.addEventListener("load", async () => {
           const picksTableRes = await fetch(`/api/display-picks?nfl_week=${week}&player_id=${player.player_id}`);
           const picksTableData = await picksTableRes.json();
 
+          window.picksTableData = picksTableData;
+       
           if (!picksTableRes.ok) {
             console.error("Error loading picks table:", picksTableData.error);
             gameContainer.innerHTML = `<p style="color:red;">Error loading weekly picks</p>`;
@@ -103,17 +107,90 @@ window.addEventListener("load", async () => {
             Object.keys(game.picks).forEach(name => allPlayerNames.add(name));
           });
           const playerNames = Array.from(allPlayerNames);
+          window.playerNames = playerNames;
 
           // Build HTML for table
+
+          // Update scores
+
+          try {
+            const gamesRes = await fetch("/api/get-games?mode=week");
+            const games = await gamesRes.json();
+
+            if (!gamesRes.ok) {
+              throw new Error ("Error fetching games: " + (games.error || "Unknown error"));
+            }
+
+            const gameIds = games.map(g => g.dk_game_id);
+            if (gameIds.length === 0) {
+              alert("No games found for this week.");
+              return;
+            }
+
+            const response = await fetch("/api/scores-refresh", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ gameIds }),
+            });
+
+            const data = await response.json();
+            const updates = data.updates || [];
+
+            // Update local gamesData with the new winning_team values
+            updates.forEach(update => {
+              const match = window.picksTableData.find(g => g.dk_game_id === update.dk_game_id);
+              if (match) {
+                match.winning_team = update.winning_team;
+                match.home_score = update.home_score;
+                match.away_score = update.away_score;
+              }
+            });
+
+            // Reset win counters
+            playerNames.forEach(player => {
+              (playerWins[player] = 0);
+          });
+            
+            // Count wins for completed games
+            picksTableData.forEach(game => {
+              if (game.winning_team) { // Only completed games
+                playerNames.forEach(player => {
+                  const pick = game.picks[player];
+                  if (pick && pick === game.winning_team) {
+                    playerWins[player] += 1;
+                  }
+                });
+              }
+            });
+
+            window.playerWins = playerWins;
+
+              if (!response.ok) {
+                throw new Error("Refresh failed");
+              }
+              alert(`Scores refreshed successfully! Requests left: ${data.requests_remaining}`);
+
+            } catch (err) {
+              alert("Error refreshing scores: " + err.message);
+            } 
+       
+          window.playerWins = playerWins;
+          const allWeek = await fetch("/api/get-games?mode=week");
+          const allWeekGames = await allWeek.json();
+          const firstGameStart = new Date(Math.min(...allWeekGames.map(g => new Date(g.game_date).getTime())));
+          const now = new Date();
+        
           let html = `<h3>Week ${week}</h3>`;
           html += `<div><table class="scores-table">`;
           html += "<thead><tr>";
           playerNames.forEach(name => {
             html += `<th>${name}</th>`;
           });
-          html += "</tr><tbody><tr>";
-          html += "<td>P1</td><td>P2</td><td>P3</td><td>P4</td></tr>";
-          html += "</tbody></table></div>";
+          html += "</tr></thead><tbody><tr>";
+          playerNames.forEach(name => {
+            html += `<td>${playerWins[name]}</td>`
+          });
+          html += "</tr></tbody></table></div>";
 
           for (const [day, dayGames] of Object.entries(gamesByDay)) {
             html += `<h4 class="day-header">${day}</h4>`;
@@ -143,15 +220,6 @@ window.addEventListener("load", async () => {
           }
 
           gameContainer.innerHTML = html;
-          
-          const allWeek = await fetch("/api/get-games?mode=week");
-          const allWeekGames = await allWeek.json();
-          const firstGameStart = new Date(Math.min(...allWeekGames.map(g => new Date(g.game_date).getTime())));
-          const now = new Date();
-          if (now >= firstGameStart) {
-            scoresBtn.style.display = "inline-block";
-          }
-
           loadingEl.style.display = "none";
           return;
 
@@ -302,51 +370,6 @@ document.getElementById("refreshOddsBtn").addEventListener("click", async () => 
   } finally {
     gamesBtn.disabled = false;
     gamesBtn.textContent = "Games";
-  }
-});
-
-// On 'Scores' button click
-// Get scores from the API and save them in the database
-  document.getElementById("scoresBtn").addEventListener("click", async () => {
-  const scoresBtn = document.getElementById("scoresBtn");
-  scoresBtn.disabled = true;
-  scoresBtn.textContent = "Wait...";
-
-  try {
-    const gamesRes = await fetch("/api/get-games?mode=week");
-    const games = await gamesRes.json();
-
-    if (!gamesRes.ok) {
-      throw new Error ("Error fetching games: " + (games.error || "Unknown error"));
-    }
-
-    const gameIds = games.map(g => g.dk_game_id);
-    if (gameIds.length === 0) {
-      alert("No games found for this week.");
-      return;
-    }
-
-    const response = await fetch("/api/scores-refresh", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ gameIds }),
-    });
-
-    const data = await response.json();
-    requestsRemaining = data.requestsRemaining;
-
-    if (!response.ok) {
-      throw new Error("Refresh failed");
-    }
-    alert(`Scores refreshed successfully! Requests left: ${requestsRemaining}`);
-    scoresBtn.disabled = false;
-    scoresBtn.textContent = "Scores";
-  } catch (err) {
-    alert("Error refreshing scores: " + err.message);
-  } finally {
-    scoresBtn.disabled = false;
-    scoresBtn.textContent = "Scores";
-    location.reload();
   }
 });
 
