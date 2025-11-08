@@ -162,14 +162,14 @@ button {
 
 @media screen and (orientation: portrait) {
     .picks-table th, .picks-table td {
-        font-size: 7px;
+        font-size: 6px;
         height: 14px;
     }
 }
 
 .scores-table {
     table-layout: fixed;
-    width: 50%;
+    width: 60%;
     margin-left: auto;
     margin-right: auto;
     border-collapse: collapse;
