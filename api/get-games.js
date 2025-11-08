@@ -29,11 +29,11 @@ export default async function handler(req, res) {
     const nflWeeks = Array.from({ length: 18 }, (_, i) => {
       const week = i + 1;
 
-      // Week 1 begins Tuesday Sept 2 2025 @ 3 AM Eastern (month 8 = September)
-      const start = getEasternDateUTC(2025, 8, 2 + i * 7, 3);
+      // Week 1 begins Tuesday Sept 2 2025 @ 3 PM Eastern (month 8 = September)
+      const start = getEasternDateUTC(2025, 8, 2 + i * 7, 15);
 
-      // End = 3 AM Eastern of the following Tuesday minus 1 ms
-      const end = new Date(getEasternDateUTC(2025, 8, 2 + (i + 1) * 7, 3) - 1);
+      // End = 3 PM Eastern of the following Tuesday minus 1 ms
+      const end = new Date(getEasternDateUTC(2025, 8, 2 + (i + 1) * 7, 15) - 1);
 
       return { week, start, end };
     });

@@ -9,6 +9,7 @@ window.addEventListener("load", async () => {
     const refreshOddsBtn = document.getElementById("refreshOddsBtn");
     const gameContainer = document.getElementById("gameList");
     const loadingEl = document.getElementById("loadingMessage");
+    // const seasonBtn = document.getElementById("seasonBtn");
 
     window.picksTableData = [];
     window.playerNames = [];
@@ -180,48 +181,124 @@ window.addEventListener("load", async () => {
           const firstGameStart = new Date(Math.min(...allWeekGames.map(g => new Date(g.game_date).getTime())));
           const now = new Date();
         
-          let html = `<h3>Week ${week}</h3>`;
-          html += `<div><table class="scores-table">`;
-          html += "<thead><tr>";
+          let htmlPicks = `<h3>Week ${week}</h3>`;
+          htmlPicks += `<div><table class="scores-table">`;
+          htmlPicks += "<thead><tr>";
           playerNames.forEach(name => {
-            html += `<th>${name}</th>`;
+            htmlPicks += `<th>${name}</th>`;
           });
-          html += "</tr></thead><tbody><tr>";
+          htmlPicks += "</tr></thead><tbody><tr>";
           playerNames.forEach(name => {
-            html += `<td>${playerWins[name]}</td>`
+            htmlPicks += `<td>${playerWins[name]}</td>`
           });
-          html += "</tr></tbody></table></div>";
+          htmlPicks += "</tr></tbody></table></div>";
 
           for (const [day, dayGames] of Object.entries(gamesByDay)) {
-            html += `<h4 class="day-header">${day}</h4>`;
-            html += `<div><table class="picks-table">`;
-            html += "<thead><tr>";
-            html += "<th>Away Team</th><th>Score</th><th>Line</th><th>Score</th><th>Home Team</th>";
-            playerNames.forEach(name => html += `<th>${name}</th>`);
-            html += "</tr></thead><tbody>";
+            htmlPicks += `<h4 class="day-header">${day}</h4>`;
+            htmlPicks += `<div><table class="picks-table">`;
+            htmlPicks += "<thead><tr>";
+            htmlPicks += "<th>Away Team</th><th>Score</th><th>Line</th><th>Score</th><th>Home Team</th>";
+            playerNames.forEach(name => htmlPicks += `<th>${name}</th>`);
+            htmlPicks += "</tr></thead><tbody>";
 
             dayGames.forEach(game => {
               const spreadDisplay = game.spread > 0 ? `+${game.spread}` : game.spread ?? "PK";
-              html += "<tr>";
-              html += `<td>${game.away_team}</td>`;
-              html += `<td>${game.away_score ?? "-"}</td>`;
-              html += `<td>${spreadDisplay}</td>`;
-              html += `<td>${game.home_score ?? "-"}</td>`;
-              html += `<td>${game.home_team}</td>`;
+              htmlPicks += "<tr>";
+              htmlPicks += `<td>${game.away_team}</td>`;
+              htmlPicks += `<td>${game.away_score ?? "-"}</td>`;
+              htmlPicks += `<td>${spreadDisplay}</td>`;
+              htmlPicks += `<td>${game.home_score ?? "-"}</td>`;
+              htmlPicks += `<td>${game.home_team}</td>`;
               playerNames.forEach(name => {
                 const pick = game.picks[name] || "";
                 const highlight = pick === game.winning_team ? "class='correct-pick'" : "";
-                html += `<td ${highlight}>${pick}</td>`;
+                htmlPicks += `<td ${highlight}>${pick}</td>`;
               });
-              html += "</tr>";
+              htmlPicks += "</tr>";
             });
 
-            html += "</tbody></table></div>";
+            htmlPicks += "</tbody></table></div>";
           }
 
-          gameContainer.innerHTML = html;
+          gameContainer.innerHTML = htmlPicks;
           loadingEl.style.display = "none";
-          return;
+          
+          
+          // Display season standings
+          try {
+            const standingsRes = await fetch("/api/season-standings");
+            const standingsData = await standingsRes.json();
+
+            if (!Array.isArray(standingsData)) {
+              throw new Error("Invalid standings data");
+            }
+
+            // Group wins per week per player
+            const playerWinsByWeek = {}; // { week: { playerName: wins } }
+            const allPlayers = new Set();
+
+            standingsData.forEach(row => {
+              const week = row.nfl_week;
+              const player = row.player_name;
+              const pick = row.pick;
+              const winner = row.winning_team;
+
+              if (!player || !week) return;
+              allPlayers.add(player);
+
+              if (!playerWinsByWeek[week]) playerWinsByWeek[week] = {};
+
+              if (winner && pick === winner) {
+                playerWinsByWeek[week][player] = (playerWinsByWeek[week][player] || 0) + 1;
+              } else if (!playerWinsByWeek[week][player]) {
+                playerWinsByWeek[week][player] = 0;
+              }
+            });
+
+            const playerNames = Array.from(allPlayers);
+
+            // Build HTML standings table
+            let htmlStand = `<h3>Season Standings</h3>`;
+            htmlStand += `<div><table class="scores-table">`;
+            
+            htmlStand += `<th>Week</th>`;
+            playerNames.forEach(name => {
+              htmlStand += `<th>${name}</th>`;
+            });
+            htmlStand += "</tr></thead><tbody>";
+
+            // Add each week's row
+            const sortedWeeks = Object.keys(playerWinsByWeek).sort((a, b) => a - b);
+            const totalWins = Object.fromEntries(playerNames.map(n => [n, 0]));
+
+            sortedWeeks.forEach(week => {
+              htmlStand += `<tr><td>${week}</td>`;
+              playerNames.forEach(name => {
+                const wins = playerWinsByWeek[week][name] || 0;
+                totalWins[name] += wins;
+                htmlStand += `<td>${wins}</td>`;
+              });
+              htmlStand += `</tr>`;
+            });
+
+            // Add totals row
+            htmlStand += `<tr><th>Total</th>`;
+            playerNames.forEach(name => {
+              htmlStand += `<th>${totalWins[name]}</th>`;
+            });
+            htmlStand += `</tr>`;
+
+            htmlStand += "</tbody></table></div>";
+
+            // Display on page
+            const tableContainer = document.getElementById("standingsArea");
+            tableContainer.innerHTML = htmlStand;
+
+          } catch (err) {
+              alert("Error loading standings: " + err.message);
+          } 
+                
+        return;
 
         } catch (err) {
           console.error("Error loading weekly picks:", err);
@@ -231,7 +308,7 @@ window.addEventListener("load", async () => {
 
       // Display un-picked games grouped by day
       const week = games[0]?.nfl_week || "Current";
-      let html = `<h3>Week ${week}</h3>`;
+      let htmlToPick = `<h3>Week ${week}</h3>`;
       const gamesByDay = gamesToPick.reduce((groups, game) => {
         const date = new Date(game.game_date);
         const dayKey = date.toLocaleDateString("en-US", {
@@ -245,7 +322,7 @@ window.addEventListener("load", async () => {
       }, {});
 
       for (const [day, dayGames] of Object.entries(gamesByDay)) {
-        html += `<h4 class="day-header">${day}</h4>`;
+        htmlToPick += `<h4 class="day-header">${day}</h4>`;
 
         dayGames.forEach((g, i) => {
           const gameId = g.dk_game_id;
@@ -259,7 +336,7 @@ window.addEventListener("load", async () => {
 
           const nameAttr = `game-${gameId}`;
 
-          html += `
+          htmlToPick += `
             <div class="game">  
               <div class="team-row">
                 <label class="team-option">
@@ -282,8 +359,8 @@ window.addEventListener("load", async () => {
         loadingEl.style.display = "none";
       }
 
-      html += `<button id="submitBtn">Submit</button>`;
-      gameContainer.innerHTML = html;
+      htmlToPick += `<button id="submitBtn">Submit</button>`;
+      gameContainer.innerHTML = htmlToPick;
 
       // On 'Submit' button click
       // Call 'save-picks' to write to database
@@ -373,6 +450,88 @@ document.getElementById("refreshOddsBtn").addEventListener("click", async () => 
   }
 });
 
+// On 'Season' button click
+// Show table with season standing including current week
+// document.getElementById("seasonBtn").addEventListener("click", async () => {
+//   const seasonBtn = document.getElementById("seasonBtn");
+//   seasonBtn.disabled = true;
+//   seasonBtn.textContent = "Wait...";
 
+//   try {
+//     const standingsRes = await fetch("/api/season-standings");
+//     const standingsData = await standingsRes.json();
+
+//     if (!Array.isArray(standingsData)) {
+//       throw new Error("Invalid standings data");
+//     }
+
+    // Group wins per week per player
+    // const playerWinsByWeek = {}; // { week: { playerName: wins } }
+    // const allPlayers = new Set();
+
+    // standingsData.forEach(row => {
+    //   const week = row.nfl_week;
+    //   const player = row.player_name;
+    //   const pick = row.pick;
+    //   const winner = row.winning_team;
+
+    //   if (!player || !week) return;
+    //   allPlayers.add(player);
+
+    //   if (!playerWinsByWeek[week]) playerWinsByWeek[week] = {};
+
+    //   if (winner && pick === winner) {
+    //     playerWinsByWeek[week][player] = (playerWinsByWeek[week][player] || 0) + 1;
+    //   } else if (!playerWinsByWeek[week][player]) {
+    //     playerWinsByWeek[week][player] = 0;
+    //   }
+    // });
+
+    // const playerNames = Array.from(allPlayers);
+
+    // Build HTML standings table
+    // let html = `<h3>Season Standings</h3>`;
+    // html += `<div><table class="scores-table">`;
+    // html += "<thead><tr><th>Week</th>";
+
+    // playerNames.forEach(name => {
+    //   html += `<th>${name}</th>`;
+    // });
+    // html += "</tr></thead><tbody>";
+
+    // Add each week's row
+    // const sortedWeeks = Object.keys(playerWinsByWeek).sort((a, b) => a - b);
+    // const totalWins = Object.fromEntries(playerNames.map(n => [n, 0]));
+
+    // sortedWeeks.forEach(week => {
+    //   html += `<tr><td>${week}</td>`;
+    //   playerNames.forEach(name => {
+    //     const wins = playerWinsByWeek[week][name] || 0;
+    //     totalWins[name] += wins;
+    //     html += `<td>${wins}</td>`;
+    //   });
+    //   html += `</tr>`;
+    // });
+
+    // Add totals row
+    // html += `<tr><th>Total</th>`;
+    // playerNames.forEach(name => {
+    //   html += `<th>${totalWins[name]}</th>`;
+    // });
+    // html += `</tr>`;
+
+    // html += "</tbody></table></div>";
+
+    // Display on page
+//     const tableContainer = document.getElementById("standingsArea");
+//     tableContainer.innerHTML = html;
+
+//   } catch (err) {
+//     alert("Error loading standings: " + err.message);
+//   } finally {
+//     seasonBtn.disabled = false;
+//     seasonBtn.textContent = "Season";
+//   }
+// });
 
 
