@@ -150,7 +150,7 @@ button {
     }
 
 .correct-pick {
-  background-color: rgba(28, 75, 143, 0.3);
+  color: darkgreen;
   font-weight: bold;
 }
 
@@ -268,19 +268,19 @@ hr {
 }
 
 @media screen and (orientation: portrait) {
-    .scores-table {
+    .standings-table {
         width: 100%;
     }
 }
 
 @media screen and (orientation: portrait) {
-    .scores-table th {
+    .standings-table th {
         font-size: 12px;
     }
 }
 
 @media screen and (orientation: landscape) {
-    .scores-table th {
+    .standings-table th {
         font-size: 12px;
     }
 }

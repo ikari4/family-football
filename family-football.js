@@ -128,16 +128,48 @@ window.addEventListener("load", async () => {
               return;
             }
 
+// console.log('games sent from main js: ', games);
+
             const response = await fetch("/api/scores-refresh", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ gameIds }),
+              // body: JSON.stringify({ gameIds }),
+              body: JSON.stringify({ games }),
             });
 
             const data = await response.json();
             const updates = data.updates || [];
 
             // Update local gamesData with the new winning_team values
+            // for (const g of updates) {
+            //   console.log(updates);
+            //   const homeScore = g.home_score ?? null;
+            //   const homeScoreNum = Number(homeScore);
+            //   const awayScore = g.away_score ?? null;
+            //   const awayScoreNum = Number(awayScore);
+            //   const match = picksTableData?.find(p => p.dk_game_id === g.dk_game_id);
+
+              // const match = picksTableData?.find(p => p.dk_game_id === g.id);
+              // const spread = match?.spread ?? null;
+              // const home_team = match?.home_team ?? null;
+              // const away_team = match?.away_team ?? null;
+
+              // let winningTeam = null;
+              // if (!isNaN(homeScoreNum) && !isNaN(awayScoreNum)) {
+              //   winningTeam =
+              //     homeScoreNum - spread > awayScoreNum
+              //       ? home_team
+              //       : awayScoreNum + spread > homeScoreNum
+              //       ? away_team
+              //       : "TIE";
+              //     g.winning_team = winningTeam;
+              //     console.log(winningTeam);
+              //     console.log(g.winning_team);
+              // }
+            // }
+            
+// console.log('updates recieved back: ', updates);
+            
             updates.forEach(update => {
               const match = window.picksTableData.find(g => g.dk_game_id === update.dk_game_id);
               if (match) {

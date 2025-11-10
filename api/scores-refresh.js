@@ -7,8 +7,15 @@ export default async function handler (req, res) {
     url: process.env.TURSO_DATABASE_URL,
     authToken: process.env.TURSO_AUTH_TOKEN,
     });
+  
+  const { games } = req.body;
+  const gameIds = games.map(g => g.dk_game_id);
 
-  const { gameIds } = req.body;
+// console.log('games received in scoresrefresh: ', games);
+// console.log('gameIds in scores: ', gameIds);
+
+
+  // const { gameIds } = req.body;
   if (!Array.isArray(gameIds) || gameIds.length === 0) {
     return res.status(400).json({ error: "No game IDs provided" });
   }
@@ -38,21 +45,49 @@ export default async function handler (req, res) {
       gameIds.includes(g.id)
     );
 
+// console.log('relevantScores: ', relevantScores);
+
     // Update your Games table for each matching game
     const updates = [];
     for (const g of relevantScores) {
-      const homeScore = g.scores?.find(t => t.name === g.home_team)?.score ?? null;
-      const awayScore = g.scores?.find(t => t.name === g.away_team)?.score ?? null;
+      const startTime = new Date(g.commence_time);
+      const now = new Date();
+
+      if (now < startTime) {
+        continue;
+      }
+      
+      const homeScore = Number(g.scores?.find(t => t.name === g.home_team)?.score ?? null);
+      const awayScore = Number(g.scores?.find(t => t.name === g.away_team)?.score ?? null);
+      const match = games?.find(p => p.dk_game_id === g.id);
+      const spread = match?.spread ?? null;
 
       let winningTeam = null;
-      if (homeScore !== null && awayScore !== null) {
+      if (!isNaN(homeScore) && !isNaN(awayScore)) {
+
+        const awayScoreAdjusted = awayScore + spread; 
         winningTeam =
-          homeScore > awayScore
-            ? g.home_team
-            : awayScore > homeScore
-            ? g.away_team
-            : "TIE";
+        awayScoreAdjusted > homeScore
+          ? g.away_team
+          : homeScore > awayScoreAdjusted
+          ? g.home_team
+          : "TIE";
+        g.winning_team = winningTeam;
+        // console.log('typeofspread: ', typeof spread);
+        // console.log('away: ', g.away_team, 'away score: ', awayScore, 'awayScoredAdjusted: ', awayScoreAdjusted);
+        // console.log('home: ', g.home_team, homeScore);
+        // console.log('winning team: ', g.winning_team);
       }
+      
+      
+      // if (homeScore !== null && awayScore !== null) {
+      //   winningTeam =
+      //     homeScore > awayScore
+      //       ? g.home_team
+      //       : awayScore > homeScore
+      //       ? g.away_team
+      //       : "TIE";
+      // }
 
       await db.execute({
         sql: `
