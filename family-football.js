@@ -290,11 +290,11 @@ window.addEventListener("load", async () => {
             const playerNames = Array.from(allPlayers);
 
             // Build HTML standings table
-            let htmlStand = `<hr></hr>`;
-            htmlStand += `<h3>Season Standings</h3>`;
+            let htmlStand = "<hr></hr>";
+            htmlStand += "<h3>Season Standings</h3>";
             htmlStand += `<div><table class="standings-table">`;
-            
-            htmlStand += `<th>Week</th>`;
+            htmlStand += "<thead><tr>";
+            htmlStand += "<th>Week</th>";
             playerNames.forEach(name => {
               htmlStand += `<th>${name}</th>`;
             });
@@ -311,18 +311,18 @@ window.addEventListener("load", async () => {
                 totalWins[name] += wins;
                 htmlStand += `<td>${wins}</td>`;
               });
-              htmlStand += `</tr>`;
+              htmlStand += "</tr>";
             });
 
             // Add totals row
-            htmlStand += `<tr><td>Total</td>`;
+            htmlStand += "<tr><td>Total</td>";
             playerNames.forEach(name => {
               htmlStand += `<td>${totalWins[name]}</td>`;
             });
-            htmlStand += `</tr>`;
+            htmlStand += "</tr>";
 
             htmlStand += "</tbody></table></div>";
-            htmlStand += `<hr></hr>`;
+            htmlStand += "<hr></hr>";
 
             // Display on page
             const tableContainer = document.getElementById("standingsArea");

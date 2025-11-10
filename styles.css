@@ -262,7 +262,7 @@ hr {
     font-size: 16px;
 }
 
-.standings-table tr:last-child {
+.standings-table tr:last-child td {
     background-color: rgba(28, 75, 143, 0.7);
     color: white;
 }
@@ -283,4 +283,8 @@ hr {
     .standings-table th {
         font-size: 12px;
     }
+}
+
+#logoutBtn {
+    margin-bottom: 20px;
 }
